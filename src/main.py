@@ -52,7 +52,8 @@ def main():
         car.draw(screen)
         
         # Draw UI elements
-        race_info.draw_collision_info(screen, car, track)
+        collisions = car.check_rays_collision(track.get_track_rects())
+        race_info.draw_collision_info(screen, collisions)
         race_info.draw_car_info(screen, car)
         
         # Update display

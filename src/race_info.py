@@ -7,9 +7,7 @@ class RaceInfo:
     def draw_car_info(self, screen, car):
         screen.blit(self.font.render(car.get_info_text(), True, (0, 0, 0)), (10, 10))
         
-    def draw_collision_info(self, screen, car, track):
-        collissions = car.check_rays_collision(track.get_track_rects())
-
+    def draw_collision_info(self, screen, collissions):
         # Draw background for collision info with transparency
         overlay = pygame.Surface((300, 180))
         overlay.set_alpha(128) # 0 = fully transparent, 255 = fully opaque
