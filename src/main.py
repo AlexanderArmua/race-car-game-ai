@@ -4,7 +4,7 @@ import sys
 # Local imports - using relative imports since config is now inside src
 from .car import Car
 from .track import Track
-from .sensors import Sensors
+from .race_info import RaceInfo
 from .config.settings import (
     DISPLAY_WIDTH, DISPLAY_HEIGHT, BACKGROUND_COLOR, FPS,
     CAR_IMAGE_PATH, CAR_WIDTH
@@ -27,7 +27,7 @@ def main():
     
     car = Car(car_x, car_y, CAR_IMAGE_PATH, CAR_WIDTH)
     track = Track(DISPLAY_WIDTH, DISPLAY_HEIGHT)
-    sensors = Sensors()
+    race_info = RaceInfo()
     
     # Main game loop
     running = True
@@ -47,16 +47,13 @@ def main():
         # Update game objects
         car.update(keys, DISPLAY_WIDTH, DISPLAY_HEIGHT)
         
-        # Clear screen
-        screen.fill(BACKGROUND_COLOR)
-        
         # Draw game objects
-        track.draw(screen)
+        track.draw(screen, BACKGROUND_COLOR)
         car.draw(screen)
         
         # Draw UI elements
-        sensors.draw_collision_info(screen, car, track)
-        sensors.draw_car_info(screen, car)
+        race_info.draw_collision_info(screen, car, track)
+        race_info.draw_car_info(screen, car)
         
         # Update display
         pygame.display.update()
