@@ -4,8 +4,10 @@ class RaceInfo:
     def __init__(self):
         self.font = pygame.font.Font('freesansbold.ttf', 16)
 
-    def draw_car_info(self, screen, car):
-        screen.blit(self.font.render(car.get_info_text(), True, (0, 0, 0)), (10, 10))
+    def draw_car_info(self, screen, car_info):
+        text = f'Car Info: X={car_info["x"]}, Y={car_info["y"]}, Max speed: {car_info["speed"]}, Alive: {car_info["alive"]}'
+
+        screen.blit(self.font.render(text, True, (0, 0, 0)), (10, 10))
         
     def draw_collision_info(self, screen, collissions):
         # Draw background for collision info with transparency

@@ -7,6 +7,7 @@ class Car:
         self.x = x
         self.y = y
         self.speed = 5
+        self.alive = True
         
         # Load image
         self.image = pygame.image.load(img_path).convert_alpha()
@@ -28,24 +29,25 @@ class Car:
     def update(self, keys, display_width, display_height):
         change_x = 0
         change_y = 0
+        changed = False
 
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            if self.x > 0:
-                change_x = -self.speed
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            if self.x < display_width - self.width:
-                change_x = self.speed
-        if keys[pygame.K_UP] or keys[pygame.K_w]:
-            if self.y > 0:
-                change_y = -self.speed
-        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-            if self.y < display_height - self.height:
-                change_y = self.speed
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]: change_x = -self.speed
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]: change_x = self.speed
+        if keys[pygame.K_UP] or keys[pygame.K_w]: change_y = -self.speed
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]: change_y = self.speed
         
-        self.x += change_x
-        self.y += change_y
+        if change_x != 0:
+            if self.x > 0 and self.x < display_width - self.width: 
+                self.x += change_x
+                changed = True
         
-        self._update_sensors(change_x, change_y)
+        if change_y != 0:
+            if self.y > 0 and self.y < display_height - self.height:
+                self.y += change_y
+                changed = True
+
+        if changed:
+            self._update_sensors(change_x, change_y)
                 
     def draw(self, screen):
         screen.blit(self.image, (self.x, self.y))
@@ -74,5 +76,20 @@ class Car:
         
         return all_collissions
     
-    def get_info_text(self):
-        return f'Car Info: X={self.x}, Y={self.y}, Max speed: {self.speed}'
+    def check_collision_with_track(self, wall_rects):
+        for rect in wall_rects:
+            if self.inner_rect.clipline((self.x, self.y), (self.x + self.width, self.y + self.height)):
+                return True
+    
+        return False
+
+    def is_alive(self):
+        return self.alive
+
+    def get_info(self):
+        return {
+            'x': self.x,
+            'y': self.y,
+            'speed': self.speed,
+            'alive': self.alive
+        }

@@ -51,10 +51,15 @@ def main():
         track.draw(screen, BACKGROUND_COLOR)
         car.draw(screen)
         
+        # Metrics for AI
+        # 5 sensors - 2 walls - 10 possible collisions
+        sensor_detections = car.check_rays_collision(track.get_track_rects())
+        # Car info
+        car_info = car.get_info()
+
         # Draw UI elements
-        collisions = car.check_rays_collision(track.get_track_rects())
-        race_info.draw_collision_info(screen, collisions)
-        race_info.draw_car_info(screen, car)
+        race_info.draw_collision_info(screen, sensor_detections)
+        race_info.draw_car_info(screen, car_info)
         
         # Update display
         pygame.display.update()
