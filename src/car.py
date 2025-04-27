@@ -1,63 +1,73 @@
 import pygame
+import math
 
 from .sensor import Sensor
+
 
 class Car:
     def __init__(self, x, y, img_path, width=60):
         self.x = x
         self.y = y
-        self.speed = 5
+        self.angle = 90
+        self.speed = 10
+        self.turn_speed = 3
         self.alive = True
         
-        # Load image
+        # Load and scale image
         self.image = pygame.image.load(img_path).convert_alpha()
         original_width, original_height = self.image.get_size()
         aspect_ratio = original_height / original_width
         self.width = width
         self.height = int(width * aspect_ratio)
         self.image = pygame.transform.smoothscale(self.image, (self.width, self.height))
-        
+        self.rect = self.image.get_rect(center=(x, y))
+
+        self.rotated_car = pygame.transform.rotate(self.image, self.angle)
+
+        # Useful to get the position of the car in any moment
+        self.rect = self.rotated_car.get_rect(center=(self.x, self.y))
+
         # Sensors
         self.sensors = [
-            Sensor(self.x, self.y, 135),
-            Sensor(self.x + self.width / 2 - (10 / 5), self.y, 90),
-            Sensor(self.x + self.width - 10, self.y, 45),
-            Sensor(self.x, self.y + 10, 180),
-            Sensor(self.x + self.width - 10, self.y + 10, 0)
+            Sensor(self.rect.topleft, 135),
+            Sensor(self.rect.midtop, 90),
+            Sensor(self.rect.topright, 45),
         ]
         
     def update(self, keys, display_width, display_height):
-        change_x = 0
-        change_y = 0
-        changed = False
-
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]: change_x = -self.speed
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]: change_x = self.speed
-        if keys[pygame.K_UP] or keys[pygame.K_w]: change_y = -self.speed
-        if keys[pygame.K_DOWN] or keys[pygame.K_s]: change_y = self.speed
+        new_angle = 0
         
-        if change_x != 0:
-            if self.x > 0 and self.x < display_width - self.width: 
-                self.x += change_x
-                changed = True
-        
-        if change_y != 0:
-            if self.y > 0 and self.y < display_height - self.height:
-                self.y += change_y
-                changed = True
+        # Key pressed
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]: new_angle = self.turn_speed
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]: new_angle = -self.turn_speed
 
-        if changed:
-            self._update_sensors(change_x, change_y)
+        # New angle for the car
+        self.angle += new_angle
+
+        rad = math.radians(self.angle)
+
+        change_x = self.speed * math.cos(rad)
+        change_y = -self.speed * math.sin(rad) 
+
+        self.x += change_x
+        self.y += change_y
+
+        # Rotate the car image
+        self.rotated_car = pygame.transform.rotate(self.image, self.angle)
+        self.rect = self.rotated_car.get_rect(center=(self.x, self.y))
+
+        # Update sensors position
+        self._update_sensors(change_x, change_y, new_angle)
                 
     def draw(self, screen):
-        screen.blit(self.image, (self.x, self.y))
+        screen.blit(self.rotated_car, self.rect.topleft)
         
         # Draw sensors
         self._draw_sensors(screen)
 
-    def _update_sensors(self, change_x, change_y):
+    def _update_sensors(self, change_x, change_y, change_angle):
         for sensor in self.sensors:
-            sensor.update(change_x, change_y)
+            sensor.update(change_x, change_y, change_angle)
     
     def _draw_sensors(self, screen):
         for sensor in self.sensors:
@@ -91,5 +101,6 @@ class Car:
             'x': self.x,
             'y': self.y,
             'speed': self.speed,
-            'alive': self.alive
+            'alive': self.alive,
+            'angle': self.angle
         }

@@ -5,7 +5,7 @@ class RaceInfo:
         self.font = pygame.font.Font('freesansbold.ttf', 16)
 
     def draw_car_info(self, screen, car_info):
-        text = f'Car Info: X={car_info["x"]}, Y={car_info["y"]}, Max speed: {car_info["speed"]}, Alive: {car_info["alive"]}'
+        text = f'Car Info: X={car_info["x"]}, Y={car_info["y"]}, Max speed: {car_info["speed"]}, Angle: {car_info["angle"]}, Alive: {car_info["alive"]}'
 
         screen.blit(self.font.render(text, True, (0, 0, 0)), (10, 10))
         
