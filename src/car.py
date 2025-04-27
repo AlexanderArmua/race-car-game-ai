@@ -9,7 +9,7 @@ class Car:
         self.x = x
         self.y = y
         self.angle = 90
-        self.speed = 10
+        self.speed = 3
         self.turn_speed = 3
         self.alive = True
         
@@ -31,16 +31,16 @@ class Car:
 
         # Sensor offsets (relative to center, without rotation)
         self.sensor_offsets = [
-            (-car_width // 2, -car_height // 2),  # topleft
-            (0, -car_height // 2),                # midtop
-            (car_width // 2, -car_height // 2),   # topright
+            (car_width // 2, -car_height // 2),  # topleft
+            (car_width // 2, 0),                # midtop
+            (car_width // 2, car_height // 2),   # topright
         ]
 
         # Sensors
         self.sensors = [
-            Sensor(self.sensor_offsets[0], 135),  # left-top
-            Sensor(self.sensor_offsets[1], 90),   # mid-top
-            Sensor(self.sensor_offsets[2], 45),   # right-top
+            Sensor(self.sensor_offsets[0], 45),  # left-top
+            Sensor(self.sensor_offsets[1], 0),   # mid-top
+            Sensor(self.sensor_offsets[2], -45),   # right-top
         ]
     
     

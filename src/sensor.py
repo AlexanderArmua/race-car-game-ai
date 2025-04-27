@@ -17,13 +17,16 @@ class Sensor:
     def update(self, car_x, car_y, car_angle_deg):
         car_angle_rad = math.radians(car_angle_deg)
 
+        # For POSITIONS, rotate offset with NEGATIVE car angle
         rotated_x = self.offset_x * math.cos(-car_angle_rad) - self.offset_y * math.sin(-car_angle_rad)
         rotated_y = self.offset_x * math.sin(-car_angle_rad) + self.offset_y * math.cos(-car_angle_rad)
 
         self.x = car_x + rotated_x
         self.y = car_y + rotated_y
 
-        self.absolute_angle_rad = math.radians(self.relative_angle_deg) - car_angle_rad
+        # For RAY DIRECTIONS, rotate normally (positive)
+        total_angle_deg = car_angle_deg + self.relative_angle_deg
+        self.absolute_angle_rad = math.radians(total_angle_deg)
     
     def draw(self, screen):
         # Draw sensor center
