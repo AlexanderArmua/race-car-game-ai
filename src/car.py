@@ -27,13 +27,23 @@ class Car:
         # Useful to get the position of the car in any moment
         self.rect = self.rotated_car.get_rect(center=(self.x, self.y))
 
+        car_width, car_height = self.image.get_size()
+
+        # Sensor offsets (relative to center, without rotation)
+        self.sensor_offsets = [
+            (-car_width // 2, -car_height // 2),  # topleft
+            (0, -car_height // 2),                # midtop
+            (car_width // 2, -car_height // 2),   # topright
+        ]
+
         # Sensors
         self.sensors = [
-            Sensor(self.rect.topleft, 135),
-            Sensor(self.rect.midtop, 90),
-            Sensor(self.rect.topright, 45),
+            Sensor(self.sensor_offsets[0], 135),  # left-top
+            Sensor(self.sensor_offsets[1], 90),   # mid-top
+            Sensor(self.sensor_offsets[2], 45),   # right-top
         ]
-        
+    
+    
     def update(self, keys, display_width, display_height):
         new_angle = 0
         
@@ -42,7 +52,7 @@ class Car:
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]: new_angle = -self.turn_speed
 
         # New angle for the car
-        self.angle += new_angle
+        self.angle = (self.angle + new_angle) % 360
 
         rad = math.radians(self.angle)
 
@@ -57,7 +67,7 @@ class Car:
         self.rect = self.rotated_car.get_rect(center=(self.x, self.y))
 
         # Update sensors position
-        self._update_sensors(change_x, change_y, new_angle)
+        self._update_sensors()
                 
     def draw(self, screen):
         screen.blit(self.rotated_car, self.rect.topleft)
@@ -65,9 +75,9 @@ class Car:
         # Draw sensors
         self._draw_sensors(screen)
 
-    def _update_sensors(self, change_x, change_y, change_angle):
+    def _update_sensors(self):
         for sensor in self.sensors:
-            sensor.update(change_x, change_y, change_angle)
+            sensor.update(self.x, self.y, self.angle)
     
     def _draw_sensors(self, screen):
         for sensor in self.sensors:
