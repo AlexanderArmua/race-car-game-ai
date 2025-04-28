@@ -8,6 +8,9 @@ This project consists of two main components:
 1. A car racing game with basic physics and collision detection
 2. A genetic algorithm implementation that trains AI agents to drive on any track
 
+![image](https://github.com/user-attachments/assets/00aacacb-81f0-436b-ab77-69e51edafe0b)
+
+
 ## Installation
 
 ```bash
