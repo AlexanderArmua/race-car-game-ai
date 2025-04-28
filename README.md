@@ -15,7 +15,7 @@ This project consists of two main components:
 
 ```bash
 # Clone the repository
-git clone <your-repository-url>
+git clone git@github.com:AlexanderArmua/race-car-game-ai.git
 cd car-racing
 
 # Create a virtual environment (optional but recommended)
