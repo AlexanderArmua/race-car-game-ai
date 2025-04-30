@@ -1,3 +1,4 @@
+import random
 import pygame
 import math
 
@@ -12,6 +13,7 @@ class Car:
         self.speed = 3
         self.turn_speed = 3
         self.alive = True
+        self.pause = False
         
         # Load and scale image
         self.image = pygame.image.load(img_path).convert_alpha()
@@ -45,6 +47,8 @@ class Car:
     
     
     def update(self, keys, display_width, display_height):
+        if self.pause or not self.alive: return
+
         new_angle = 0
         
         # Key pressed
@@ -114,3 +118,6 @@ class Car:
             'alive': self.alive,
             'angle': self.angle
         }
+
+    def change_pause(self):
+        self.pause = not self.pause
