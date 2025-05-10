@@ -4,10 +4,10 @@ import pygame
 
 
 class Sensor:
-    def __init__(self, offset, relative_angle_degree, sensor_size=10, ray_length=1000):
+    def __init__(self, offset, relative_angle_degree, sensor_size=10, max_ray_length=1000):
         self.offset_x, self.offset_y = offset  # relative to car center
         self.relative_angle_deg = relative_angle_degree  # relative angle
-        self.ray_length = ray_length
+        self.ray_length = max_ray_length
         self.sensor_size = sensor_size
         self.ray_color = (255, 0, 255)
         self.sensor_color = (255, 0, 0)
@@ -30,13 +30,13 @@ class Sensor:
         total_angle_deg = car_angle_deg + self.relative_angle_deg
         self.absolute_angle_rad = math.radians(total_angle_deg)
     
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface, sensor_size: float | None):
         # Draw sensor center
         pygame.draw.circle(screen, self.sensor_color, (int(self.x), int(self.y)), self.sensor_size // 2)
 
         # Draw sensor ray
-        end_x = self.x + self.ray_length * math.cos(self.absolute_angle_rad)
-        end_y = self.y - self.ray_length * math.sin(self.absolute_angle_rad)
+        end_x = self.x + (sensor_size or self.ray_length) * math.cos(self.absolute_angle_rad)
+        end_y = self.y - (sensor_size or self.ray_length) * math.sin(self.absolute_angle_rad)
 
         pygame.draw.line(screen, self.ray_color, (self.x, self.y), (end_x, end_y), 2)
 

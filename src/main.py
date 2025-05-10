@@ -31,8 +31,8 @@ def main():
     car_x = (DISPLAY_WIDTH - CAR_WIDTH) // 2
     car_y = (DISPLAY_HEIGHT - CAR_WIDTH) // 2
     
-    car = Car(car_x, car_y, CAR_IMAGE_PATH, CAR_WIDTH)
     track = Track(DISPLAY_WIDTH, DISPLAY_HEIGHT)
+    car = Car(car_x, car_y, CAR_IMAGE_PATH, CAR_WIDTH, track)
     race_info = RaceInfo()
     
     # Main game loop
@@ -54,15 +54,17 @@ def main():
         keys = pygame.key.get_pressed()
         
         # Update game objects
-        car.update(keys, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+        car.update(keys)
         
         # Draw game objects
         track.draw(screen, BACKGROUND_COLOR)
+
+        # TODO: Draw 20 cars
         car.draw(screen)
         
         # Metrics for AI
         # 5 sensors - 2 walls - 10 possible collisions
-        sensor_detections = car.check_rays_collision(track)
+        sensor_detections = car.check_rays_collision()
         # Car info
         car_info = car.get_info()
 

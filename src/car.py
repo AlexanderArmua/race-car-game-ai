@@ -8,14 +8,15 @@ from .track import Track
 
 
 class Car:
-    def __init__(self, x, y, img_path, width=60):
+    def __init__(self, x, y, img_path, width=60, track: Track = None):
         self.x = x
         self.y = y
         self.angle = 90
-        self.speed = 0.1
+        self.speed = 3
         self.turn_speed = 3
         self.alive = True
         self.pause = False
+        self.track = track
         
         # Load and scale image
         self.image = pygame.image.load(img_path).convert_alpha()
@@ -48,7 +49,7 @@ class Car:
         ]
     
     
-    def update(self, keys, display_width, display_height):
+    def update(self, keys):
         if self.pause or not self.alive: return
 
         new_angle = 0
@@ -75,7 +76,7 @@ class Car:
         # Update sensors position
         self._update_sensors()
                 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface):
         screen.blit(self.rotated_car, self.rect.topleft)
         
         # Draw sensors
@@ -85,37 +86,48 @@ class Car:
         for sensor in self.sensors:
             sensor.update(self.x, self.y, self.angle)
     
-    def _draw_sensors(self, screen):
+    def _draw_sensors(self, screen: pygame.Surface):
         for sensor in self.sensors:
-            sensor.draw(screen)        
+            sensor_size = self.get_closest_colission_between_sensor_and_lines(sensor)
+
+            sensor.draw(screen, sensor_size)        
                          
-    def check_rays_collision(self, track: Track) -> list[float | None]:
+    def check_rays_collision(self) -> list[float | None]:
         """
         Returns a list of distances to the nearest collision point for each sensor.
         """
 
-        lines = track.get_track_lines()
         sensors = self.sensors
 
         collisions = []
 
         for sensor in sensors:
-            sensor_colissions: float | None = None
-
-            for line in lines:
-                colission = sensor.get_distance_to_collision(line)
-
-                if sensor_colissions is None or (colission is not None and colission < sensor_colissions):
-                    sensor_colissions = colission
+            sensor_colissions: float | None = self.get_closest_colission_between_sensor_and_lines(sensor)
             
             collisions.append(sensor_colissions)
 
         return collisions
 
-    def is_alive(self):
+    def get_closest_colission_between_sensor_and_lines(self, sensor: Sensor) -> float | None:
+        lines = self.track.get_track_lines()
+
+        sensor_colissions: float | None = None
+
+        for line in lines:
+            colission = sensor.get_distance_to_collision(line)
+
+            if sensor_colissions is None or (colission is not None and colission < sensor_colissions):
+                sensor_colissions = colission
+
+        return sensor_colissions
+
+    def is_alive(self) -> bool:
+        """
+        Returns True if the car is alive, False otherwise.
+        """
         return self.alive
 
-    def get_info(self):
+    def get_info(self) -> dict[str, int | float | bool]:
         return {
             'x': self.x,
             'y': self.y,
@@ -124,5 +136,8 @@ class Car:
             'angle': self.angle
         }
 
-    def change_pause(self):
+    def change_pause(self) -> None:
+        """
+        Changes the pause state of the car.
+        """
         self.pause = not self.pause
