@@ -28,8 +28,8 @@ def main():
     clock = pygame.time.Clock()
     
     # Create game objects
-    car_x = (DISPLAY_WIDTH - CAR_WIDTH) // 2
-    car_y = (DISPLAY_HEIGHT - CAR_WIDTH) // 2
+    car_x = 900
+    car_y = 600
     
     track = Track(DISPLAY_WIDTH, DISPLAY_HEIGHT)
     car = Car(car_x, car_y, CAR_IMAGE_PATH, CAR_WIDTH, track)

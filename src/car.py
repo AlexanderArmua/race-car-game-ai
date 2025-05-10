@@ -74,6 +74,14 @@ class Car:
 
         # Update sensors position
         self._update_sensors()
+
+        # Check collisions
+        for sensor in self.sensors:
+            sensor_collision_distance = sensor.get_colission_distance()
+
+            if sensor_collision_distance is not None and sensor_collision_distance <= self.speed:
+                self.alive = False
+                break
                 
     def draw(self, screen: pygame.Surface):
         screen.blit(self.rotated_car, self.rect.topleft)

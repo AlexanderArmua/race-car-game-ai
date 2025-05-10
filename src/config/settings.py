@@ -12,5 +12,5 @@ CAR_IMAGE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__
 if not os.path.exists(CAR_IMAGE_PATH):
     raise FileNotFoundError(f"Car image not found at {CAR_IMAGE_PATH}")
 
-CAR_WIDTH = 60
+CAR_WIDTH = 30
 CAR_SPEED = 5
