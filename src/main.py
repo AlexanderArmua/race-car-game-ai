@@ -3,11 +3,8 @@ import sys
 import pygame
 
 # Local imports - using relative imports since config is now inside src
-from .car import Car
 from .config.settings import (
     BACKGROUND_COLOR,
-    CAR_IMAGE_PATH,
-    CAR_WIDTH,
     DISPLAY_HEIGHT,
     DISPLAY_WIDTH,
     FPS,
@@ -16,24 +13,49 @@ from .race_info import RaceInfo
 from .track import Track
 
 
-def main():
+def init_game():
     # Initialize pygame
     pygame.init()
-    
-    # Set up display
-    screen = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
-    pygame.display.set_caption('UTN - IA 2025 - Car Game')
-    
+
     # Set up clock for controlling frame rate
     clock = pygame.time.Clock()
     
-    # Create game objects
-    car_x = 900
-    car_y = 600
+    # Set window title
+    pygame.display.set_caption('UTN - IA 2025 - Car Game')
+
+    # Set up display
+    screen = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
+
+    return clock, screen
     
-    track = Track(DISPLAY_WIDTH, DISPLAY_HEIGHT)
-    car = Car(car_x, car_y, CAR_IMAGE_PATH, CAR_WIDTH, track)
-    race_info = RaceInfo()
+def control_events(track: Track) -> bool:
+    """
+    Check key events and update game objects.
+    Returns True if the game should continue running, False otherwise.
+    """
+
+    # Process events
+    for event in pygame.event.get():
+        is_close = event.type == pygame.QUIT
+        is_escape = event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+
+        if is_close or is_escape:
+            return False
+    
+    # Get key states
+    keys = pygame.key.get_pressed()
+
+    # Update game objects
+    track.update(keys)
+
+    return True
+
+def main():
+    clock, screen = init_game()
+        
+    track = Track(screen, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+    
+    race_info = RaceInfo(screen, track)
     
     # Main game loop
     running = True
@@ -42,38 +64,19 @@ def main():
         # Control frame rate
         clock.tick(FPS)
         
-        # Process events
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    car.change_pause()
-        
-        # Get key states
-        keys = pygame.key.get_pressed()
-        
-        # Update game objects
-        car.update(keys)
+        running = control_events(track)
         
         # Draw game objects
-        track.draw(screen, BACKGROUND_COLOR)
-
-        # TODO: Draw 20 cars
-        car.draw(screen)
+        track.draw(BACKGROUND_COLOR)
         
         # Metrics for AI
-        # 5 sensors - 2 walls - 10 possible collisions
-        sensor_detections = car.check_rays_collision()
-        # Car info
-        car_info = car.get_info()
-
-        # Draw UI elements
-        race_info.draw_collision_info(screen, sensor_detections)
-        race_info.draw_car_info(screen, car_info)
+        race_info.draw()
         
         # Update display
         pygame.display.update()
+
+        if track.are_all_cars_dead():
+            track.restart_cars()
     
     # Clean up
     pygame.quit()

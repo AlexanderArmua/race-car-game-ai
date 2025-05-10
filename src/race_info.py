@@ -1,31 +1,42 @@
 import pygame
 
+from .car import Car
+from .track import Track
+
 
 class RaceInfo:
-    def __init__(self):
+    def __init__(self, screen: pygame.Surface, track: Track):
         self.font = pygame.font.Font('freesansbold.ttf', 16)
-
-    def draw_car_info(self, screen, car_info):
-        text = f'Car Info: X={car_info["x"]}, Y={car_info["y"]}, Max speed: {car_info["speed"]}, Angle: {car_info["angle"]}, Alive: {car_info["alive"]}'
-
-        screen.blit(self.font.render(text, True, (0, 0, 0)), (10, 10))
+        self.screen = screen
+        self.track = track
         
-    def draw_collision_info(self, screen, collissions):
+    def draw(self):
         # Draw background for collision info with transparency
-        overlay = pygame.Surface((300, 180))
+        height = len(self.track.cars) * 17
+        
+        overlay = pygame.Surface((170, height))
         overlay.set_alpha(128) # 0 = fully transparent, 255 = fully opaque
         overlay.fill((50, 50, 50))
-        screen.blit(overlay, (5, 25))
+        self.screen.blit(overlay, (5, 25))
 
-        for i, collision in enumerate(collissions):
-            text = f"Sensor {i} - "
-
-            if not collision:
-                text += "No collision"
-            else:
-                text += f"Hit - ({collision})"
-
-            screen.blit(
+        for i, car in enumerate(self.track.cars):
+            text = self.build_car_info_text(car, i)
+            
+            self.screen.blit(
                 self.font.render(text, True, (255, 127, 255)), (10, 30 + i * 16)
             )
+    
+    def build_car_info_text(self, car: Car, i: int) -> str:
+        text = f"{i + 1:02d}: "
+
+        if car.is_alive():
+            text += "Alive"
+        else:
+            text += "Dead"
+
+        text += " | "
+
+        text += f"Score: {car.get_score():03d}"
+
+        return text
     

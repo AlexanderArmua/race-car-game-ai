@@ -1,8 +1,15 @@
 import pygame
 
+from .car import Car
+from .config.settings import CAR_IMAGE_PATH, CAR_WIDTH, CARS_AMOUNT
+
+# Create game objects
+init_car_x = 860
+init_car_y = 500
+max_car_per_line = 5
 
 class Track:
-    def __init__(self, display_width: int, display_height: int, border_padding: float = 0.1, track_width: float = 0.2):
+    def __init__(self, screen: pygame.Surface, display_width: int, display_height: int, border_padding: float = 0.1, track_width: float = 0.2):
         """
         Initializes the track.
         
@@ -12,10 +19,13 @@ class Track:
             border_padding: Padding from the edges of the display
             track_width: Width of the track
         """
+        self.screen = screen
         self.display_width = display_width
         self.display_height = display_height
         self.border_padding = border_padding
         self.track_width = track_width
+
+        self.car_image = self.get_car_image(CAR_IMAGE_PATH, CAR_WIDTH)
         
         # Outer boundary rectangle (big)
         self.outer_rect = pygame.Rect(
@@ -24,7 +34,7 @@ class Track:
             display_width * (1 - 2 * border_padding), 
             display_height * (1 - 2 * border_padding)
         )
-        
+
         # Inner boundary rectangle (small)
         self.inner_rect = pygame.Rect(
             display_width * (border_padding + track_width), 
@@ -32,8 +42,16 @@ class Track:
             display_width * (1 - 2 * (border_padding + track_width)), 
             display_height * (1 - 2 * (border_padding + track_width))
         )
+
+        self.restart_cars()
+
+    def update(self, keys: list[int]):
+        # Update cars
+        for car in self.cars:
+            car.update(keys, self.get_track_lines())
+
     
-    def draw(self, screen: pygame.Surface, background_color: tuple[int, int, int]):
+    def draw(self, background_color: tuple[int, int, int]):
         """
         Draws the track on the screen.
         
@@ -42,17 +60,21 @@ class Track:
             background_color: Tuple of RGB values for the background color
         """
         # Fill entire screen first
-        screen.fill(background_color)
+        self.screen.fill(background_color)
         
         # Draw outer track (grey)
-        pygame.draw.rect(screen, (128, 128, 128), self.outer_rect)
+        pygame.draw.rect(self.screen, (128, 128, 128), self.outer_rect)
         
         # Draw inner green rectangle (cutout inside the track)
-        pygame.draw.rect(screen, background_color, self.inner_rect)
-        
+        pygame.draw.rect(self.screen, background_color, self.inner_rect)
+
         # Optional: Draw borders (lines)
-        pygame.draw.rect(screen, (255, 0, 0), self.outer_rect, 3)  # Outer border
-        pygame.draw.rect(screen, (255, 0, 0), self.inner_rect, 3)  # Inner border
+        pygame.draw.rect(self.screen, (255, 0, 0), self.outer_rect, 3)  # Outer border
+        pygame.draw.rect(self.screen, (255, 0, 0), self.inner_rect, 3)  # Inner border
+
+        # Draw cars
+        for car in self.cars:
+            car.draw(self.screen)
     
     def get_boundary_rects(self) -> list[pygame.Rect]:
         """
@@ -88,3 +110,35 @@ class Track:
             lines.extend(self.get_rect_lines(rect))
 
         return lines
+
+    def get_car_image(self, img_path: str, car_width: int) -> pygame.Surface:
+        """
+        Returns a scaled car image based on the given width for the current track.
+        """
+        image = pygame.image.load(img_path).convert_alpha()
+        original_width, original_height = image.get_size()
+        aspect_ratio = original_height / original_width
+        width = car_width
+        height = int(width * aspect_ratio)
+        
+        return pygame.transform.smoothscale(image, (width, height))
+
+    def generate_cars(self, cars_amount: int = 20) -> list[Car]: 
+        cars = []       
+
+        for i in range(cars_amount):
+            x = init_car_x + (i % max_car_per_line) * 50
+            y = init_car_y + (i // max_car_per_line) * 50
+
+            cars.append(Car(x, y, CAR_IMAGE_PATH, CAR_WIDTH, self.car_image))
+
+        return cars
+    
+    def are_all_cars_dead(self) -> bool:
+        for car in self.cars:
+            if car.is_alive(): return False
+        
+        return True
+
+    def restart_cars(self):
+        self.cars = self.generate_cars(CARS_AMOUNT)

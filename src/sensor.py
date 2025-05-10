@@ -4,7 +4,7 @@ import pygame
 
 
 class Sensor:
-    def __init__(self, offset, relative_angle_degree, sensor_size=10, max_ray_length=1000):
+    def __init__(self, offset, relative_angle_degree, sensor_size=5, max_ray_length=1000):
         self.offset_x, self.offset_y = offset  # relative to car center
         self.relative_angle_deg = relative_angle_degree  # relative angle
         self.max_ray_length = max_ray_length
@@ -48,7 +48,7 @@ class Sensor:
         end_x = self.x + self.current_length * math.cos(self.absolute_angle_rad)
         end_y = self.y - self.current_length * math.sin(self.absolute_angle_rad)
 
-        pygame.draw.line(screen, self.ray_color, (self.x, self.y), (end_x, end_y), 2)
+        pygame.draw.line(screen, self.ray_color, (self.x, self.y), (end_x, end_y), 1)
 
     def get_distance_to_collision(self, line: tuple[tuple[int, int], tuple[int, int]]) -> float | None:
         """
