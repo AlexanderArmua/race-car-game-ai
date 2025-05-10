@@ -48,8 +48,7 @@ class Car:
             Sensor(self.sensor_offsets[2], -45),   # right-top
         ]
     
-    
-    def update(self, keys):
+    def update(self, keys: list[int]):
         if self.pause or not self.alive: return
 
         new_angle = 0
@@ -84,27 +83,25 @@ class Car:
 
     def _update_sensors(self):
         for sensor in self.sensors:
-            sensor.update(self.x, self.y, self.angle)
+            sensor_size = self.get_closest_colission_between_sensor_and_lines(sensor)
+
+            sensor.update(self.x, self.y, self.angle, sensor_size)
     
     def _draw_sensors(self, screen: pygame.Surface):
         for sensor in self.sensors:
-            sensor_size = self.get_closest_colission_between_sensor_and_lines(sensor)
-
-            sensor.draw(screen, sensor_size)        
+            sensor.draw(screen)        
                          
     def check_rays_collision(self) -> list[float | None]:
         """
         Returns a list of distances to the nearest collision point for each sensor.
         """
 
-        sensors = self.sensors
+        collisions: list[float | None] = []
 
-        collisions = []
+        for sensor in self.sensors:
+            sensor_collision_distance = sensor.get_colission_distance()
 
-        for sensor in sensors:
-            sensor_colissions: float | None = self.get_closest_colission_between_sensor_and_lines(sensor)
-            
-            collisions.append(sensor_colissions)
+            collisions.append(sensor_collision_distance)
 
         return collisions
 
