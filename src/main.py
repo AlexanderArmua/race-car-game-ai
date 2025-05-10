@@ -62,7 +62,7 @@ def main():
         
         # Metrics for AI
         # 5 sensors - 2 walls - 10 possible collisions
-        sensor_detections = car.check_rays_collision(track.get_track_rects())
+        sensor_detections = car.check_rays_collision(track.get_boundary_rects())
         # Car info
         car_info = car.get_info()
 
