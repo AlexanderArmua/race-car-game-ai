@@ -4,6 +4,7 @@ import random
 import pygame
 
 from .sensor import Sensor
+from .track import Track
 
 
 class Car:
@@ -88,10 +89,10 @@ class Car:
         for sensor in self.sensors:
             sensor.draw(screen)        
                          
-    def check_rays_collision(self, wall_rects):
+    def check_rays_collision(self, track: Track):
         all_collissions = []
 
-        for rect in wall_rects:
+        for rect in track.get_boundary_rects():
             for sensor in self.sensors:
                 intersection = sensor.check_collision(rect)
                 if intersection:
@@ -100,13 +101,6 @@ class Car:
                     all_collissions.append(None)
         
         return all_collissions
-    
-    def check_collision_with_track(self, wall_rects):
-        for rect in wall_rects:
-            if self.inner_rect.clipline((self.x, self.y), (self.x + self.width, self.y + self.height)):
-                return True
-    
-        return False
 
     def is_alive(self):
         return self.alive
