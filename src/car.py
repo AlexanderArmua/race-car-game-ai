@@ -1,6 +1,7 @@
-import random
-import pygame
 import math
+import random
+
+import pygame
 
 from .sensor import Sensor
 
@@ -10,7 +11,7 @@ class Car:
         self.x = x
         self.y = y
         self.angle = 90
-        self.speed = 3
+        self.speed = 0.1
         self.turn_speed = 3
         self.alive = True
         self.pause = False

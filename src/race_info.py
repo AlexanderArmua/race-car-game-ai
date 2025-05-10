@@ -1,5 +1,6 @@
 import pygame
 
+
 class RaceInfo:
     def __init__(self):
         self.font = pygame.font.Font('freesansbold.ttf', 16)

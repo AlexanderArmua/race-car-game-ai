@@ -1,5 +1,6 @@
 import pygame
 
+
 class Track:
     def __init__(self, display_width, display_height, border_padding=0.1, track_width=0.2):
         self.display_width = display_width

@@ -1,5 +1,7 @@
-import pygame
 import math
+
+import pygame
+
 
 class Sensor:
     def __init__(self, offset, relative_angle_degree, sensor_size=10, ray_length=300):

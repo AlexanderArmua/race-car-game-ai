@@ -1,14 +1,20 @@
-import pygame
 import sys
+
+import pygame
 
 # Local imports - using relative imports since config is now inside src
 from .car import Car
-from .track import Track
-from .race_info import RaceInfo
 from .config.settings import (
-    DISPLAY_WIDTH, DISPLAY_HEIGHT, BACKGROUND_COLOR, FPS,
-    CAR_IMAGE_PATH, CAR_WIDTH
+    BACKGROUND_COLOR,
+    CAR_IMAGE_PATH,
+    CAR_WIDTH,
+    DISPLAY_HEIGHT,
+    DISPLAY_WIDTH,
+    FPS,
 )
+from .race_info import RaceInfo
+from .track import Track
+
 
 def main():
     # Initialize pygame
