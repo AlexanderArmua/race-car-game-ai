@@ -89,18 +89,28 @@ class Car:
         for sensor in self.sensors:
             sensor.draw(screen)        
                          
-    def check_rays_collision(self, track: Track):
-        all_collissions = []
+    def check_rays_collision(self, track: Track) -> list[float | None]:
+        """
+        Returns a list of distances to the nearest collision point for each sensor.
+        """
 
-        for rect in track.get_boundary_rects():
-            for sensor in self.sensors:
-                intersection = sensor.check_collision(rect)
-                if intersection:
-                    all_collissions.append(intersection)
-                else:
-                    all_collissions.append(None)
-        
-        return all_collissions
+        lines = track.get_track_lines()
+        sensors = self.sensors
+
+        collisions = []
+
+        for sensor in sensors:
+            sensor_colissions: float | None = None
+
+            for line in lines:
+                colission = sensor.get_distance_to_collision(line)
+
+                if sensor_colissions is None or (colission is not None and colission < sensor_colissions):
+                    sensor_colissions = colission
+            
+            collisions.append(sensor_colissions)
+
+        return collisions
 
     def is_alive(self):
         return self.alive

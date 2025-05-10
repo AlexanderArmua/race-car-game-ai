@@ -23,7 +23,7 @@ class RaceInfo:
             if not collision:
                 text += "No collision"
             else:
-                text += f"Hit - ({collision[0]}, {collision[1]})"
+                text += f"Hit - ({collision})"
 
             screen.blit(
                 self.font.render(text, True, (255, 127, 255)), (10, 30 + i * 16)
