@@ -1,7 +1,8 @@
 import pygame
 
 from .car import Car
-from .config.settings import CAR_IMAGE_PATH, CAR_WIDTH, CARS_AMOUNT
+from .config.settings import CAR_IMAGE_PATH, CAR_WIDTH
+from .ai.car_rna import CarRNA
 
 # Create game objects
 init_car_x = 860
@@ -9,7 +10,7 @@ init_car_y = 500
 max_car_per_line = 5
 
 class Track:
-    def __init__(self, screen: pygame.Surface, display_width: int, display_height: int, border_padding: float = 0.1, track_width: float = 0.2):
+    def __init__(self, screen: pygame.Surface, rnas: list[CarRNA], display_width: int, display_height: int, border_padding: float = 0.1, track_width: float = 0.2):
         """
         Initializes the track.
         
@@ -19,6 +20,7 @@ class Track:
             border_padding: Padding from the edges of the display
             track_width: Width of the track
         """
+        self.rnas = rnas
         self.screen = screen
         self.display_width = display_width
         self.display_height = display_height
@@ -43,7 +45,7 @@ class Track:
             display_height * (1 - 2 * (border_padding + track_width))
         )
 
-        self.restart_cars()
+        self.restart_cars(self.rnas)
 
     def update(self, keys: list[int]):
         # Update cars
@@ -123,14 +125,16 @@ class Track:
         
         return pygame.transform.smoothscale(image, (width, height))
 
-    def generate_cars(self, cars_amount: int = 20) -> list[Car]: 
-        cars = []       
+    def generate_cars(self) -> list[Car]: 
+        cars = []
 
-        for i in range(cars_amount):
+        for i in range(len(self.rnas)):
             x = init_car_x + (i % max_car_per_line) * 50
             y = init_car_y + (i // max_car_per_line) * 50
 
-            cars.append(Car(x, y, CAR_IMAGE_PATH, CAR_WIDTH, self.car_image))
+            rna = self.rnas[i]
+
+            cars.append(Car(rna, x, y, CAR_IMAGE_PATH, CAR_WIDTH, self.car_image))
 
         return cars
     
@@ -140,5 +144,7 @@ class Track:
         
         return True
 
-    def restart_cars(self):
-        self.cars = self.generate_cars(CARS_AMOUNT)
+    def restart_cars(self, rnas: list[CarRNA]):
+        self.rnas = rnas
+
+        self.cars = self.generate_cars()

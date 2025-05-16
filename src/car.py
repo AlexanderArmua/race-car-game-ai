@@ -3,20 +3,20 @@ import random
 
 import pygame
 
-from .config.settings import MANUAL_CONTROL
+from .config.settings import MANUAL_CONTROL, CAR_SPEED, CAR_TURN_SPEED
 from .sensor import Sensor
-
+from .ai.car_rna import CarRNA, CarRNAResult
 
 class Car:   
-    def __init__(self, x, y, img_path, width=60, image: pygame.Surface = None):
+    def __init__(self, rna: CarRNA, x, y, img_path, width=60, image: pygame.Surface = None):
+        self.rna = rna
         self.x = x
         self.y = y
         self.angle = 90
-        self.speed = 10
-        self.turn_speed = 3
+        self.speed = CAR_SPEED
+        self.turn_speed = CAR_TURN_SPEED
         self.alive = True
         self.pause = False
-        self.score = 0
         
         # Load and scale image
         self.image = image
@@ -54,8 +54,11 @@ class Car:
             if keys[pygame.K_LEFT] or keys[pygame.K_a]: new_angle = self.turn_speed
             if keys[pygame.K_RIGHT] or keys[pygame.K_d]: new_angle = -self.turn_speed
         else:
-            if random.randint(0, 1) == 0: new_angle = self.turn_speed
-            else: new_angle = -self.turn_speed
+            result = self.rna.get_interpretated_result(self.check_rays_collision())
+
+            if result == CarRNAResult.LEFT: new_angle = self.turn_speed
+            elif result == CarRNAResult.RIGHT: new_angle = -self.turn_speed
+            else: pass
 
         # New angle for the car
         self.angle = (self.angle + new_angle) % 360
@@ -81,7 +84,7 @@ class Car:
             self.alive = False
         
         if self.alive:
-            self.score += 1
+            self.rna.increase_score(1)
                 
     def draw(self, screen: pygame.Surface):
         screen.blit(self.rotated_car, self.rect.topleft)
@@ -155,4 +158,4 @@ class Car:
         self.pause = not self.pause
 
     def get_score(self) -> float:
-        return self.score
+        return self.rna.get_score()

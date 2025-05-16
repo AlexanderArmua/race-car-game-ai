@@ -14,6 +14,7 @@ if not os.path.exists(CAR_IMAGE_PATH):
     raise FileNotFoundError(f"Car image not found at {CAR_IMAGE_PATH}")
 
 CAR_WIDTH = 30
-CAR_SPEED = 5
+CAR_SPEED = 30
+CAR_TURN_SPEED = 10
 
-MANUAL_CONTROL = True
+MANUAL_CONTROL = False

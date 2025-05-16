@@ -7,10 +7,12 @@ from .config.settings import (
     BACKGROUND_COLOR,
     DISPLAY_HEIGHT,
     DISPLAY_WIDTH,
+    CARS_AMOUNT,
     FPS,
 )
 from .race_info import RaceInfo
 from .track import Track
+from .ai.car_alg_gen import CarAlgGen
 
 
 def init_game():
@@ -53,17 +55,23 @@ def control_events(track: Track) -> bool:
 def main():
     clock, screen = init_game()
         
-    track = Track(screen, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+    alg_gen = CarAlgGen(CARS_AMOUNT)
+    rna_cars = alg_gen.generate_initial_population()
+
+    track = Track(screen, rna_cars, DISPLAY_WIDTH, DISPLAY_HEIGHT)
     
     race_info = RaceInfo(screen, track)
     
     # Main game loop
     running = True
     
+    seconds_running = 0
+
     while running:
         # Control frame rate
         clock.tick(FPS)
-        
+        seconds_running += 1/FPS
+                
         running = control_events(track)
         
         # Draw game objects
@@ -75,8 +83,16 @@ def main():
         # Update display
         pygame.display.update()
 
-        if track.are_all_cars_dead():
-            track.restart_cars()
+        if track.are_all_cars_dead() or seconds_running > 10:
+            seconds_running = 0
+
+            best_car = max(track.cars, key=lambda car: car.get_score())
+
+            print(f"Generation: {alg_gen.get_generation()} - Best car score: {best_car.get_score()} - Neurons: {best_car.rna.get_chromosomes()}")
+
+            new_rnas = alg_gen.get_new_population()
+
+            track.restart_cars(new_rnas)
     
     # Clean up
     pygame.quit()
