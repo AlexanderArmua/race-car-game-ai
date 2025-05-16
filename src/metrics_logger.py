@@ -64,9 +64,20 @@ class MetricsLogger:
         return max(run_numbers) + 1
 
     def _initialize_csv(self):
-        """Initialize the CSV file with headers."""
+        """Initialize the CSV file with headers and metadata."""
+        from .config.settings import USE_FIXED_SEED, RANDOM_SEED
+
         with open(self.log_file_path, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
+
+            # Write metadata first (commented lines that explain the run configuration)
+            writer.writerow(['# Metrics Log File'])
+            writer.writerow([f'# Using fixed seed: {USE_FIXED_SEED}'])
+            if USE_FIXED_SEED:
+                writer.writerow([f'# Random seed value: {RANDOM_SEED}'])
+            writer.writerow(['# ------------------------------'])
+
+            # Write actual headers
             writer.writerow(['generation', 'best_car_score', 'best_weights'])
 
     def log_generation(self, generation: int, best_car_score: float, best_weights: List[float]):

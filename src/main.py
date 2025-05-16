@@ -1,4 +1,6 @@
 import sys
+import random
+import numpy as np
 
 import pygame
 
@@ -10,6 +12,8 @@ from .config.settings import (
     CARS_AMOUNT,
     FPS,
     GENERATION_TIME_LIMIT,
+    RANDOM_SEED,
+    USE_FIXED_SEED,
 )
 from .race_info import RaceInfo
 from .track import Track
@@ -54,7 +58,21 @@ def control_events(track: Track) -> bool:
 
     return True
 
+def set_random_seed():
+    """Set random seeds for reproducibility if enabled in settings."""
+    if USE_FIXED_SEED:
+        # Set seeds for different libraries that might use randomness
+        random.seed(RANDOM_SEED)
+        np.random.seed(RANDOM_SEED)
+        print(f"Using fixed random seed: {RANDOM_SEED}")
+    else:
+        print("Using random behavior (no fixed seed)")
+
+
 def main():
+    # Set random seed before anything else
+    set_random_seed()
+
     clock, screen = init_game()
 
     alg_gen = CarAlgGen(CARS_AMOUNT)
