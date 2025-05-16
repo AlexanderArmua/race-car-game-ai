@@ -1,6 +1,5 @@
 import sys
 import random
-import numpy as np
 
 import pygame
 
@@ -63,15 +62,20 @@ def set_random_seed():
     if USE_FIXED_SEED:
         # Set seeds for different libraries that might use randomness
         random.seed(RANDOM_SEED)
-        np.random.seed(RANDOM_SEED)
         print(f"Using fixed random seed: {RANDOM_SEED}")
+
+        return RANDOM_SEED
     else:
-        print("Using random behavior (no fixed seed)")
+        seed = random.randrange(sys.maxsize)
+        random.seed(seed)
+        print(f"Using random behavior (no fixed seed) - Random seed: {seed}")
+
+        return seed    
 
 
 def main():
     # Set random seed before anything else
-    set_random_seed()
+    seed = set_random_seed()
 
     clock, screen = init_game()
 
@@ -83,7 +87,7 @@ def main():
     race_info = RaceInfo(screen, track)
 
     # Create a metrics logger
-    metrics_logger = MetricsLogger()
+    metrics_logger = MetricsLogger(seed)
 
     # Main game loop
     running = True

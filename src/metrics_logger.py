@@ -6,8 +6,9 @@ from typing import List
 
 
 class MetricsLogger:
-    def __init__(self):
+    def __init__(self, seed: int):
         """Initialize the metrics logger."""
+        self.seed = seed
         self.log_file_path = self._create_log_file()
         self._initialize_csv()
 
@@ -65,16 +66,12 @@ class MetricsLogger:
 
     def _initialize_csv(self):
         """Initialize the CSV file with headers and metadata."""
-        from .config.settings import USE_FIXED_SEED, RANDOM_SEED
-
         with open(self.log_file_path, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
 
             # Write metadata first (commented lines that explain the run configuration)
             writer.writerow(['# Metrics Log File'])
-            writer.writerow([f'# Using fixed seed: {USE_FIXED_SEED}'])
-            if USE_FIXED_SEED:
-                writer.writerow([f'# Random seed value: {RANDOM_SEED}'])
+            writer.writerow([f'# Random seed value: {self.seed}'])
             writer.writerow(['# ------------------------------'])
 
             # Write actual headers
@@ -98,4 +95,4 @@ class MetricsLogger:
             writer.writerow([generation, best_car_score, f'"{weights_str}"'])
 
         # Also print to console for immediate feedback
-        print(f"Generation: {generation} - Best car score: {best_car_score} - Metrics logged to {self.log_file_path}")
+        # print(f"Generation: {generation} - Best car score: {best_car_score}")

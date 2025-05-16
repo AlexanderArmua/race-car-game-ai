@@ -32,6 +32,8 @@ class CarAlgGen:
         # Select best individuals from current population
         best_chromosomes = self.select_population(self.population)
 
+        best_car = max(self.population, key=lambda rna: rna.get_score())
+
         # Create offspring through crossover
         crossovered_chromosomes = self.crossover_population(best_chromosomes)
 
@@ -48,7 +50,7 @@ class CarAlgGen:
         # Store as current population for next generation
         self.population = new_population
 
-        print(f"Generation: {self.generation} - Best RNAs: {len(best_chromosomes)} - Crossovers: {len(crossovered_chromosomes)} - Total population: {len(new_population)}")
+        print(f"Generation: {self.generation} - Best car score: {best_car.get_score()}")
 
         return new_population
 
