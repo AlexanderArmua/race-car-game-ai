@@ -16,28 +16,39 @@ class CarAlgGen:
         self.generation = 0
     
     def generate_initial_population(self) -> list[CarRNA]:
-        chromosomes = self.get_new_chromosomes(self.population_size)
+        chromosomes_list = self.get_new_chromosomes(self.population_size)
 
-        self.population = [CarRNA(chromosomes) for chromosomes in chromosomes]
+        self.population = [CarRNA(chromosomes) for chromosomes in chromosomes_list]
 
         return self.population
 
     def get_new_population(self) -> list[CarRNA]:
+        """
+        Creates and returns a new population for the next generation.
+        Also stores the new population as the current one.
+        """
         self.generation += 1
 
-        best_rnas = self.select_population(self.population)
+        # Select best individuals from current population
+        best_chromosomes = self.select_population(self.population)
 
-        crossovered_rnas = self.crossover_population(best_rnas)
+        # Create offspring through crossover
+        crossovered_chromosomes = self.crossover_population(best_chromosomes)
 
-        new_chromosomes = self.get_new_chromosomes(len(self.population) - len(crossovered_rnas))
+        # Add some completely new individuals for genetic diversity
+        additional_chromosomes = self.get_new_chromosomes(len(self.population) - len(crossovered_chromosomes))
+        all_chromosomes = crossovered_chromosomes + additional_chromosomes
 
-        crossovered_rnas.extend(new_chromosomes)
+        # Apply mutations to the entire new population
+        mutated_chromosomes = self.mutate_population(all_chromosomes)
 
-        mutated_rnas = self.mutate_population(crossovered_rnas)
+        # Create CarRNA objects from the chromosomes
+        new_population = [CarRNA(chromosomes) for chromosomes in mutated_chromosomes]
 
-        new_population = [CarRNA(chromsomes) for chromsomes in mutated_rnas]
+        # Store as current population for next generation
+        self.population = new_population
 
-        print(f"best_rnas: {len(best_rnas)} - crossovered_rnas: {len(crossovered_rnas)} - mutated_rnas: {len(mutated_rnas)} - new_population: {len(new_population)}")
+        print(f"Generation: {self.generation} - Best RNAs: {len(best_chromosomes)} - Crossovers: {len(crossovered_chromosomes)} - Total population: {len(new_population)}")
 
         return new_population
 
@@ -70,29 +81,56 @@ class CarAlgGen:
     
     def get_new_chromosomes(self, amount: int) -> list[list[float]]:
         """
-        Returns a new population of the given amount.
+        Returns a list of different chromosome sets (each one a list of weights).
+
+        Args:
+            amount: Number of chromosome sets to generate
+
+        Returns:
+            A list of lists, where each inner list is a set of chromosomes for one car
         """
-        population = []
+        chromosome_sets = []
 
         for i in range(amount):
-            chromsomes: list[float] = [random.uniform(-1, 1) for _ in range(self.chromosomes_amount)]
+            new_chromosomes: list[float] = [random.uniform(-1, 1) for _ in range(self.chromosomes_amount)]
+            chromosome_sets.append(new_chromosomes)
 
-            population.append(chromsomes)
-
-        return population   
+        return chromosome_sets
 
     def mutate_population(self, population: list[list[float]]) -> list[list[float]]:
         """
-        Returns the mutated population applying mutation.
-        """
+        Applies mutation to the population with some probability.
+        Increases mutation rate as generations progress to avoid local optima.
 
-        for rna in population:
-            should_mutate = random.random() < 0.01
+        Args:
+            population: List of chromosome sets
+
+        Returns:
+            The mutated population
+        """
+        # Increase mutation rate slightly based on generation (up to 5%)
+        base_mutation_rate = 0.02  # 2% base mutation rate
+        adaptive_rate = min(0.05, base_mutation_rate + (self.generation * 0.001))
+
+        for chromosomes in population:
+            # For each chromosome set, decide if it should be mutated
+            should_mutate = random.random() < adaptive_rate
 
             if should_mutate:
-                mutation_point = random.randint(0, self.chromosomes_amount - 1)
+                # Pick 1-3 genes to mutate (more impact)
+                num_mutations = random.randint(1, 3)
+                for _ in range(num_mutations):
+                    mutation_point = random.randint(0, self.chromosomes_amount - 1)
 
-                rna[mutation_point] = random.uniform(-1, 1)
+                    # Apply mutation (either small or large change)
+                    if random.random() < 0.7:  # 70% chance of small mutation
+                        # Small adjustment to existing value (-0.2 to +0.2)
+                        chromosomes[mutation_point] += random.uniform(-0.2, 0.2)
+                        # Clamp value between -1 and 1
+                        chromosomes[mutation_point] = max(-1, min(1, chromosomes[mutation_point]))
+                    else:
+                        # Complete replacement with new random value
+                        chromosomes[mutation_point] = random.uniform(-1, 1)
 
         return population
 

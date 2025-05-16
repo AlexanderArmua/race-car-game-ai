@@ -8,6 +8,11 @@ BACKGROUND_COLOR = (0, 140, 0) # Green grass
 FPS = 30
 CARS_AMOUNT = 20
 
+# AI settings
+GENERATION_TIME_LIMIT = 20  # Seconds before creating a new generation
+RANDOM_SEED = 42  # Fixed seed for reproducibility (change this value to get different but reproducible results)
+USE_FIXED_SEED = True  # Set to False to use random behavior
+
 # Define the path relative to the project root
 CAR_IMAGE_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'assets', 'car.png')
 if not os.path.exists(CAR_IMAGE_PATH):

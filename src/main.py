@@ -9,10 +9,12 @@ from .config.settings import (
     DISPLAY_WIDTH,
     CARS_AMOUNT,
     FPS,
+    GENERATION_TIME_LIMIT,
 )
 from .race_info import RaceInfo
 from .track import Track
 from .ai.car_alg_gen import CarAlgGen
+from .metrics_logger import MetricsLogger
 
 
 def init_game():
@@ -54,41 +56,49 @@ def control_events(track: Track) -> bool:
 
 def main():
     clock, screen = init_game()
-        
+
     alg_gen = CarAlgGen(CARS_AMOUNT)
     rna_cars = alg_gen.generate_initial_population()
 
     track = Track(screen, rna_cars, DISPLAY_WIDTH, DISPLAY_HEIGHT)
-    
+
     race_info = RaceInfo(screen, track)
-    
+
+    # Create a metrics logger
+    metrics_logger = MetricsLogger()
+
     # Main game loop
     running = True
-    
+
     seconds_running = 0
 
     while running:
         # Control frame rate
         clock.tick(FPS)
         seconds_running += 1/FPS
-                
+
         running = control_events(track)
-        
+
         # Draw game objects
         track.draw(BACKGROUND_COLOR)
-        
+
         # Metrics for AI
         race_info.draw()
-        
+
         # Update display
         pygame.display.update()
 
-        if track.are_all_cars_dead() or seconds_running > 10:
+        if track.are_all_cars_dead() or seconds_running > GENERATION_TIME_LIMIT:
             seconds_running = 0
 
             best_car = max(track.cars, key=lambda car: car.get_score())
 
-            print(f"Generation: {alg_gen.get_generation()} - Best car score: {best_car.get_score()} - Neurons: {best_car.rna.get_chromosomes()}")
+            # Log metrics for this generation
+            metrics_logger.log_generation(
+                alg_gen.get_generation(),
+                best_car.get_score(),
+                best_car.rna.get_chromosomes()
+            )
 
             new_rnas = alg_gen.get_new_population()
 
