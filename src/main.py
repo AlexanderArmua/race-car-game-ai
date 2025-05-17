@@ -119,7 +119,8 @@ def main():
             metrics_logger.log_generation(
                 alg_gen.get_generation(),
                 best_car.get_score(),
-                best_car.rna.get_chromosomes()
+                track.get_all_cars_alive(),
+                track.cars
             )
 
             new_rnas = alg_gen.get_new_population()

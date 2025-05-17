@@ -137,6 +137,9 @@ class Track:
             cars.append(Car(rna, x, y, CAR_IMAGE_PATH, CAR_WIDTH, self.car_image))
 
         return cars
+
+    def get_all_cars_alive(self) -> int:
+        return sum(1 for car in self.cars if car.is_alive())
     
     def are_all_cars_dead(self) -> bool:
         for car in self.cars:

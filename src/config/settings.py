@@ -9,7 +9,7 @@ FPS = 30
 CARS_AMOUNT = 20
 
 # AI settings
-GENERATION_TIME_LIMIT = 20  # Seconds before creating a new generation
+GENERATION_TIME_LIMIT = 5  # Seconds before creating a new generation
 RANDOM_SEED = 2062072707638544738  # Fixed seed for reproducibility (change this value to get different but reproducible results)
 USE_FIXED_SEED = False  # Set to False to use random behavior
 
@@ -21,5 +21,7 @@ if not os.path.exists(CAR_IMAGE_PATH):
 CAR_WIDTH = 30
 CAR_SPEED = 30
 CAR_TURN_SPEED = 10
+
+MUTATION_RATE = 0.05
 
 MANUAL_CONTROL = False

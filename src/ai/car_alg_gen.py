@@ -1,4 +1,5 @@
 from .car_rna import CarRNA
+from ..config.settings import MUTATION_RATE
 import random
 
 CHROMOSOMES_AMOUNT = 12
@@ -68,16 +69,20 @@ class CarAlgGen:
         Returns the crossovered population applying simple crossover
         """
         
-        crossover_population = []
+        crossover_population: list[list[float]] = []
 
         for i in range(0, len(population), 2):
-            break_point = random.randint(0, self.chromosomes_amount - 1)
+            # break_point = random.randint(0, self.chromosomes_amount - 1)
+            break_point = 10
 
             parent1 = population[i]
             parent2 = population[i + 1]
 
-            crossover_population.append(parent1[:break_point] + parent2[break_point:])
-            crossover_population.append(parent2[:break_point] + parent1[break_point:])           
+            child1 = parent1[:break_point] + parent2[break_point:]
+            child2 = parent2[:break_point] + parent1[break_point:]
+
+            crossover_population.append(child1)
+            crossover_population.append(child2)
 
         return crossover_population
     
@@ -91,7 +96,7 @@ class CarAlgGen:
         Returns:
             A list of lists, where each inner list is a set of chromosomes for one car
         """
-        chromosome_sets = []
+        chromosome_sets: list[list[float]] = []
 
         for i in range(amount):
             new_chromosomes: list[float] = [random.uniform(-1, 1) for _ in range(self.chromosomes_amount)]
@@ -112,7 +117,7 @@ class CarAlgGen:
         """
         # Increase mutation rate slightly based on generation (up to 5%)
         base_mutation_rate = 0.02  # 2% base mutation rate
-        adaptive_rate = min(0.05, base_mutation_rate + (self.generation * 0.001))
+        adaptive_rate = min(MUTATION_RATE, base_mutation_rate + (self.generation * 0.001))
 
         for chromosomes in population:
             # For each chromosome set, decide if it should be mutated

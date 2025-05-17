@@ -3,6 +3,7 @@ import csv
 import glob
 import datetime
 from typing import List
+from .car import Car
 
 
 class MetricsLogger:
@@ -75,24 +76,34 @@ class MetricsLogger:
             writer.writerow(['# ------------------------------'])
 
             # Write actual headers
-            writer.writerow(['generation', 'best_car_score', 'best_weights'])
+            writer.writerow(['generation', 'best_car_score', 'cars_alive', 'best_weights'])
 
-    def log_generation(self, generation: int, best_car_score: float, best_weights: List[float]):
+    def log_generation(self, generation: int, best_car_score: float, cars_alive: int, all_cars: List[Car]):
         """Log metrics for the current generation.
 
         Args:
             generation: Current generation number
             best_car_score: Score of the best performing car
+            cars_alive: Number of cars still alive
             best_weights: Neural network weights of the best car
         """
         with open(self.log_file_path, 'a', newline='') as csvfile:
             writer = csv.writer(csvfile)
 
+            # List of cars in format [{ score: int, weights: list[float] }]
+            cars_list = [{
+                'score': car.get_score(),
+                'weights': car.rna.get_chromosomes()
+            } for car in all_cars]
+
+            # Convert cars list to string representation
+            cars_list_str = ','.join([str(car) for car in cars_list])
+
             # Convert neurons list to string representation
-            weights_str = ','.join([str(n) for n in best_weights])
+            # weights_str = ','.join([str(n) for n in best_weights])
 
             # Write the row with generation, score, and neurons (in quotes)
-            writer.writerow([generation, best_car_score, f'"{weights_str}"'])
+            writer.writerow([generation, best_car_score, cars_alive, f'"{cars_list_str}"'])
 
         # Also print to console for immediate feedback
         # print(f"Generation: {generation} - Best car score: {best_car_score}")
