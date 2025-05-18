@@ -19,28 +19,15 @@ class RaceInfo:
         self.alg_gen = alg_gen
         
     def draw(self):
-        # Draw background for collision info with transparency
-        height = len(self.track.cars) * 17
-        
-        overlay = pygame.Surface((170, height))
-        overlay.set_alpha(128) # 0 = fully transparent, 255 = fully opaque
-        overlay.fill((50, 50, 50))
-        self.screen.blit(overlay, (5, 25))
-
         # Find best car
         alive_cars = [car for car in self.track.cars if car.is_alive()]
         if alive_cars:
             current_best_car = max(alive_cars, key=lambda car: car.get_score())
             if self.best_car is None or current_best_car.get_score() > self.best_car.get_score():
                 self.best_car = current_best_car
-
-        # Draw car info
-        for i, car in enumerate(self.track.cars):
-            text = self.build_car_info_text(car, i)
-            
-            self.screen.blit(
-                self.font.render(text, True, (255, 127, 255)), (10, 30 + i * 16)
-            )
+        
+        # Draw cars status panel
+        self.draw_cars_status_panel()
             
         # Draw generation counter at the bottom left
         if self.alg_gen is not None:
@@ -65,20 +52,85 @@ class RaceInfo:
         if self.best_car is not None:
             self.draw_neural_network_weights(self.best_car)
     
-    def build_car_info_text(self, car: Car, i: int) -> str:
-        text = f"{i + 1:02d}: "
-
-        if car.is_alive():
-            text += "Alive"
-        else:
-            text += "Dead"
-
-        text += " | "
-
-        text += f"Score: {car.get_score():03d}"
-
-        return text
-    
+    def draw_cars_status_panel(self):
+        """Draw the cars status panel with improved styling."""
+        # Panel dimensions and positioning
+        panel_width = 200
+        row_height = 20
+        panel_height = len(self.track.cars) * row_height + 52  # Extra space for title and padding
+        panel_x = 10
+        panel_y = 25
+        
+        # Create panel background
+        panel = pygame.Surface((panel_width, panel_height))
+        panel.set_alpha(180)  # More opaque like neural network panel
+        panel.fill((30, 30, 40))  # Same color as neural network panel
+        self.screen.blit(panel, (panel_x, panel_y))
+        
+        # Draw panel title
+        title_text = "Cars Status"
+        self.screen.blit(
+            self.font.render(title_text, True, (255, 255, 255)),
+            (panel_x + 10, panel_y + 10)
+        )
+        
+        # Draw column headers
+        headers = ["Car", "Status", "Score"]
+        header_positions = [10, 50, 120]
+        
+        for header, x_pos in zip(headers, header_positions):
+            self.screen.blit(
+                self.small_font.render(header, True, (200, 200, 255)),
+                (panel_x + x_pos, panel_y + 35)
+            )
+        
+        # Draw separator line below headers
+        pygame.draw.line(
+            self.screen,
+            (100, 100, 150),
+            (panel_x + 5, panel_y + 50),
+            (panel_x + panel_width - 5, panel_y + 50),
+            1
+        )
+        
+        # Draw car info rows
+        for i, car in enumerate(self.track.cars):
+            row_y = panel_y + 55 + i * row_height
+            
+            # Car number
+            car_num_text = f"{i + 1:02d}"
+            self.screen.blit(
+                self.small_font.render(car_num_text, True, (255, 255, 255)),
+                (panel_x + 15, row_y)
+            )
+            
+            # Status with color (green for alive, red for dead)
+            if car.is_alive():
+                status_text = "ALIVE"
+                status_color = (100, 255, 100)  # Green
+            else:
+                status_text = "DEAD"
+                status_color = (255, 100, 100)  # Red
+                
+            self.screen.blit(
+                self.small_font.render(status_text, True, status_color),
+                (panel_x + 50, row_y)
+            )
+            
+            # Score
+            score_text = f"{car.get_score():03d}"
+            
+            # Highlight the best car
+            if self.best_car and car.get_score() == self.best_car.get_score():
+                score_color = (255, 255, 100)  # Yellow for best car
+            else:
+                score_color = (255, 255, 255)  # White for others
+                
+            self.screen.blit(
+                self.small_font.render(score_text, True, score_color),
+                (panel_x + 120, row_y)
+            )
+            
     def draw_neural_network_weights(self, car: Car):
         """Draw neural network visualization for the best car with neurons as circles and weights as colored lines."""
         screen_width = self.screen.get_width()
