@@ -127,6 +127,9 @@ def main():
             new_rnas = alg_gen.get_new_population()
 
             track.restart_cars(new_rnas)
+            
+            # Reset best car in race_info when a new generation starts
+            race_info.best_car = None
     
     # Clean up
     pygame.quit()
