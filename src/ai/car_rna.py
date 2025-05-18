@@ -1,4 +1,4 @@
-import random
+import math
 from enum import Enum
 
 NEURONS_FORMAT = [3, 3, 1] #[ (0,1,2), (3,4,5), (6) ]
@@ -8,6 +8,7 @@ class CarRNAResult(Enum):
     STRAIGHT = 1
     RIGHT = 2
 
+activation_function = math.tanh
 class CarRNA:
     def __init__(self, chromsomes: list[float]):
         if len(chromsomes) != NEURONS_FORMAT[0] * NEURONS_FORMAT[1] + NEURONS_FORMAT[1] * NEURONS_FORMAT[2]:
@@ -50,11 +51,11 @@ class CarRNA:
         if len(inputs) != NEURONS_FORMAT[0]:
             raise ValueError("Inputs length must be equal to the first layer neurons amount")
 
-        value_l1_n0 = self.weight_l0_n0_to_l1_n0 * inputs[0] + self.weight_l0_n1_to_l1_n0 * inputs[1] + self.weight_l0_n2_to_l1_n0 * inputs[2]
-        value_l1_n1 = self.weight_l0_n0_to_l1_n1 * inputs[0] + self.weight_l0_n1_to_l1_n1 * inputs[1] + self.weight_l0_n2_to_l1_n1 * inputs[2]
-        value_l1_n2 = self.weight_l0_n0_to_l1_n2 * inputs[0] + self.weight_l0_n1_to_l1_n2 * inputs[1] + self.weight_l0_n2_to_l1_n2 * inputs[2]
+        value_l1_n0 = activation_function(self.weight_l0_n0_to_l1_n0 * inputs[0] + self.weight_l0_n1_to_l1_n0 * inputs[1] + self.weight_l0_n2_to_l1_n0 * inputs[2])
+        value_l1_n1 = activation_function(self.weight_l0_n0_to_l1_n1 * inputs[0] + self.weight_l0_n1_to_l1_n1 * inputs[1] + self.weight_l0_n2_to_l1_n1 * inputs[2])
+        value_l1_n2 = activation_function(self.weight_l0_n0_to_l1_n2 * inputs[0] + self.weight_l0_n1_to_l1_n2 * inputs[1] + self.weight_l0_n2_to_l1_n2 * inputs[2])
 
-        value_l2_n0 = self.weight_l1_n0_to_l2_n0 * value_l1_n0 + self.weight_l1_n1_to_l2_n0 * value_l1_n1 + self.weight_l1_n2_to_l2_n0 * value_l1_n2
+        value_l2_n0 = activation_function(self.weight_l1_n0_to_l2_n0 * value_l1_n0 + self.weight_l1_n1_to_l2_n0 * value_l1_n1 + self.weight_l1_n2_to_l2_n0 * value_l1_n2)
 
         return value_l2_n0
 
@@ -67,9 +68,9 @@ class CarRNA:
         """
         result = self.get_result(self.normalize_inputs(inputs))
 
-        if result < 0.33:
+        if result < -0.33:
             return CarRNAResult.LEFT
-        elif result < 0.66:
+        elif result < 0.3:
             return CarRNAResult.STRAIGHT
         else:
             return CarRNAResult.RIGHT
