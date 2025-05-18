@@ -1,8 +1,8 @@
 import pygame
 
+from .ai.car_rna import CarRNA
 from .car import Car
 from .config.settings import CAR_IMAGE_PATH, CAR_WIDTH
-from .ai.car_rna import CarRNA
 
 # Create game objects
 init_car_x = 860

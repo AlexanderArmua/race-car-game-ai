@@ -1,23 +1,24 @@
-import sys
 import random
+import sys
 
 import pygame
+
+from .ai.car_alg_gen import CarAlgGen
 
 # Local imports - using relative imports since config is now inside src
 from .config.settings import (
     BACKGROUND_COLOR,
+    CARS_AMOUNT,
     DISPLAY_HEIGHT,
     DISPLAY_WIDTH,
-    CARS_AMOUNT,
     FPS,
     GENERATION_TIME_LIMIT,
     RANDOM_SEED,
     USE_FIXED_SEED,
 )
+from .metrics_logger import MetricsLogger
 from .race_info import RaceInfo
 from .track import Track
-from .ai.car_alg_gen import CarAlgGen
-from .metrics_logger import MetricsLogger
 
 
 def init_game():
