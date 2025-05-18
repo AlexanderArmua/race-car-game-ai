@@ -85,6 +85,7 @@ def main():
     track = Track(screen, rna_cars, DISPLAY_WIDTH, DISPLAY_HEIGHT)
 
     race_info = RaceInfo(screen, track)
+    race_info.set_alg_gen(alg_gen)  # Pass the genetic algorithm reference
 
     # Create a metrics logger
     metrics_logger = MetricsLogger(seed)
