@@ -27,15 +27,16 @@ def init_game():
 
     # Set up clock for controlling frame rate
     clock = pygame.time.Clock()
-    
+
     # Set window title
-    pygame.display.set_caption('UTN - IA 2025 - Car Game')
+    pygame.display.set_caption("UTN - IA 2025 - Car Game")
 
     # Set up display
     screen = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
 
     return clock, screen
-    
+
+
 def control_events(track: Track) -> bool:
     """
     Check key events and update game objects.
@@ -49,7 +50,7 @@ def control_events(track: Track) -> bool:
 
         if is_close or is_escape:
             return False
-    
+
     # Get key states
     keys = pygame.key.get_pressed()
 
@@ -57,6 +58,7 @@ def control_events(track: Track) -> bool:
     track.update(keys)
 
     return True
+
 
 def set_random_seed():
     """Set random seeds for reproducibility if enabled in settings."""
@@ -71,7 +73,7 @@ def set_random_seed():
         random.seed(seed)
         print(f"Using random behavior (no fixed seed) - Random seed: {seed}")
 
-        return seed    
+        return seed
 
 
 def main():
@@ -99,7 +101,7 @@ def main():
     while running:
         # Control frame rate
         clock.tick(FPS)
-        seconds_running += 1/FPS
+        seconds_running += 1 / FPS
 
         running = control_events(track)
 
@@ -122,19 +124,20 @@ def main():
                 alg_gen.get_generation(),
                 best_car.get_score(),
                 track.get_all_cars_alive(),
-                track.cars
+                track.cars,
             )
 
             new_rnas = alg_gen.get_new_population()
 
             track.restart_cars(new_rnas)
-            
+
             # Reset best car in race_info when a new generation starts
             race_info.best_car = None
-    
+
     # Clean up
     pygame.quit()
     sys.exit()
+
 
 if __name__ == "__main__":
     main()

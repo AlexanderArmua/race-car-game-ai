@@ -8,11 +8,18 @@ Point = Tuple[int, int]
 Line = Tuple[Point, Point]
 Color = Tuple[int, int, int]
 
+
 class Sensor:
-    def __init__(self, offset: Tuple[int, int], relative_angle_degree: float, sensor_size: int = 5, max_ray_length: int = 1000) -> None:
+    def __init__(
+        self,
+        offset: Tuple[int, int],
+        relative_angle_degree: float,
+        sensor_size: int = 5,
+        max_ray_length: int = 1000,
+    ) -> None:
         """
         Initialize a distance sensor for collision detection.
-        
+
         Args:
             offset: Position offset from car center (x, y)
             relative_angle_degree: Angle of the sensor relative to car direction
@@ -26,7 +33,7 @@ class Sensor:
         self.sensor_size: int = sensor_size
         self.ray_color: Color = (255, 0, 255)
         self.sensor_color: Color = (255, 0, 0)
-        
+
         self.x: float = 0.0
         self.y: float = 0.0
         self.absolute_angle_rad: float = 0.0  # to be updated later
@@ -34,10 +41,16 @@ class Sensor:
         self.current_length: float = self.max_ray_length
         self.colission_distance: Optional[float] = None
 
-    def update(self, car_x: float, car_y: float, car_angle_deg: float, sensor_size: Optional[float] = None) -> None:
+    def update(
+        self,
+        car_x: float,
+        car_y: float,
+        car_angle_deg: float,
+        sensor_size: Optional[float] = None,
+    ) -> None:
         """
         Update sensor position and orientation based on car movement.
-        
+
         Args:
             car_x: Car's current x position
             car_y: Car's current y position
@@ -47,8 +60,12 @@ class Sensor:
         car_angle_rad: float = math.radians(car_angle_deg)
 
         # For POSITIONS, rotate offset with NEGATIVE car angle
-        rotated_x: float = self.offset_x * math.cos(-car_angle_rad) - self.offset_y * math.sin(-car_angle_rad)
-        rotated_y: float = self.offset_x * math.sin(-car_angle_rad) + self.offset_y * math.cos(-car_angle_rad)
+        rotated_x: float = self.offset_x * math.cos(
+            -car_angle_rad
+        ) - self.offset_y * math.sin(-car_angle_rad)
+        rotated_y: float = self.offset_x * math.sin(
+            -car_angle_rad
+        ) + self.offset_y * math.cos(-car_angle_rad)
 
         self.x = car_x + rotated_x
         self.y = car_y + rotated_y
@@ -63,16 +80,18 @@ class Sensor:
         else:
             self.current_length = self.max_ray_length
             self.colission_distance = None
-    
+
     def draw(self, screen: pygame.Surface) -> None:
         """
         Draw the sensor and its ray on the screen.
-        
+
         Args:
             screen: Pygame surface to draw on
         """
         # Draw sensor center
-        pygame.draw.circle(screen, self.sensor_color, (int(self.x), int(self.y)), self.sensor_size // 2)
+        pygame.draw.circle(
+            screen, self.sensor_color, (int(self.x), int(self.y)), self.sensor_size // 2
+        )
 
         # Draw sensor ray
         end_x: float = self.x + self.current_length * math.cos(self.absolute_angle_rad)
@@ -83,10 +102,10 @@ class Sensor:
     def get_distance_to_collision(self, line: Line) -> Optional[float]:
         """
         Calculate the distance to intersection with a line.
-        
+
         Args:
             line: Track boundary line to check for intersection
-            
+
         Returns:
             Distance to the intersection or None if no intersection
         """
@@ -103,7 +122,7 @@ class Sensor:
         # 3) solve intersection via determinant
         denom: float = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
         if denom == 0:
-            return None   # parallel or collinear
+            return None  # parallel or collinear
 
         t: float = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom
         u: float = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / denom
@@ -113,11 +132,11 @@ class Sensor:
             return u * self.max_ray_length
 
         return None
-        
+
     def get_colission_distance(self) -> Optional[float]:
         """
         Get the distance to the nearest collision detected by this sensor.
-        
+
         Returns:
             Distance to collision or None if no collision
         """

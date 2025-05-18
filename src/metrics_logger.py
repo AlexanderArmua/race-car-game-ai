@@ -11,7 +11,7 @@ class MetricsLogger:
     def __init__(self, seed: int) -> None:
         """
         Initialize the metrics logger.
-        
+
         Args:
             seed: Random seed value used for this run
         """
@@ -27,7 +27,7 @@ class MetricsLogger:
             Path to the created log file
         """
         # Create logs directory if it doesn't exist
-        logs_dir: str = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'logs')
+        logs_dir: str = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs")
         os.makedirs(logs_dir, exist_ok=True)
 
         # Find the next run number by checking existing files
@@ -61,7 +61,7 @@ class MetricsLogger:
             file_name: str = os.path.basename(file_path)
             try:
                 # Extract numeric prefix (assume format is NNN_*.csv)
-                run_number: int = int(file_name.split('_')[0])
+                run_number: int = int(file_name.split("_")[0])
                 run_numbers.append(run_number)
             except (ValueError, IndexError):
                 # Skip files that don't match the expected format
@@ -75,18 +75,26 @@ class MetricsLogger:
 
     def _initialize_csv(self) -> None:
         """Initialize the CSV file with headers and metadata."""
-        with open(self.log_file_path, 'w', newline='') as csvfile:
+        with open(self.log_file_path, "w", newline="") as csvfile:
             writer = csv.writer(csvfile)
 
             # Write metadata first (commented lines that explain the run configuration)
-            writer.writerow(['# Metrics Log File'])
-            writer.writerow([f'# Random seed value: {self.seed}'])
-            writer.writerow(['# ------------------------------'])
+            writer.writerow(["# Metrics Log File"])
+            writer.writerow([f"# Random seed value: {self.seed}"])
+            writer.writerow(["# ------------------------------"])
 
             # Write actual headers
-            writer.writerow(['generation', 'best_car_score', 'cars_alive', 'best_weights'])
+            writer.writerow(
+                ["generation", "best_car_score", "cars_alive", "best_weights"]
+            )
 
-    def log_generation(self, generation: int, best_car_score: float, cars_alive: int, all_cars: List[Car]) -> None:
+    def log_generation(
+        self,
+        generation: int,
+        best_car_score: float,
+        cars_alive: int,
+        all_cars: List[Car],
+    ) -> None:
         """
         Log metrics for the current generation.
 
@@ -96,20 +104,22 @@ class MetricsLogger:
             cars_alive: Number of cars still alive
             all_cars: List of all cars in the current generation
         """
-        with open(self.log_file_path, 'a', newline='') as csvfile:
+        with open(self.log_file_path, "a", newline="") as csvfile:
             writer = csv.writer(csvfile)
 
             # List of cars in format [{ score: int, weights: list[float] }]
-            cars_list: List[Dict[str, Any]] = [{
-                'score': car.get_score(),
-                'weights': car.rna.get_chromosomes()
-            } for car in all_cars]
+            cars_list: List[Dict[str, Any]] = [
+                {"score": car.get_score(), "weights": car.rna.get_chromosomes()}
+                for car in all_cars
+            ]
 
             # Convert cars list to string representation
-            cars_list_str: str = ','.join([str(car) for car in cars_list])
+            cars_list_str: str = ",".join([str(car) for car in cars_list])
 
             # Write the row with generation, score, and neurons (in quotes)
-            writer.writerow([generation, best_car_score, cars_alive, f'"{cars_list_str}"'])
+            writer.writerow(
+                [generation, best_car_score, cars_alive, f'"{cars_list_str}"']
+            )
 
         # Also print to console for immediate feedback
         # print(f"Generation: {generation} - Best car score: {best_car_score}")

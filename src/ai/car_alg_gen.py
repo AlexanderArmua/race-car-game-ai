@@ -6,14 +6,15 @@ from .car_rna import CarRNA
 
 CHROMOSOMES_AMOUNT: int = 12
 
+
 class CarAlgGen:
     def __init__(self, population_size: int) -> None:
         """
         Initialize the genetic algorithm.
-        
+
         Args:
             population_size: Number of individuals in the population
-            
+
         Raises:
             ValueError: If population size is less than 2
         """
@@ -24,15 +25,17 @@ class CarAlgGen:
         self.chromosomes_amount: int = CHROMOSOMES_AMOUNT
         self.population: List[CarRNA] = []
         self.generation: int = 0
-    
+
     def generate_initial_population(self) -> List[CarRNA]:
         """
         Generate the initial population of neural networks.
-        
+
         Returns:
             List of CarRNA objects representing the initial population
         """
-        chromosomes_list: List[List[float]] = self.get_new_chromosomes(self.population_size)
+        chromosomes_list: List[List[float]] = self.get_new_chromosomes(
+            self.population_size
+        )
         self.population = [CarRNA(chromosomes) for chromosomes in chromosomes_list]
         return self.population
 
@@ -40,7 +43,7 @@ class CarAlgGen:
         """
         Creates and returns a new population for the next generation.
         Also stores the new population as the current one.
-        
+
         Returns:
             List of CarRNA objects representing the new population
         """
@@ -52,17 +55,25 @@ class CarAlgGen:
         best_car: CarRNA = max(self.population, key=lambda rna: rna.get_score())
 
         # Create offspring through crossover
-        crossovered_chromosomes: List[List[float]] = self.crossover_population(best_chromosomes)
+        crossovered_chromosomes: List[List[float]] = self.crossover_population(
+            best_chromosomes
+        )
 
         # Add some completely new individuals for genetic diversity
-        additional_chromosomes: List[List[float]] = self.get_new_chromosomes(len(self.population) - len(crossovered_chromosomes))
-        all_chromosomes: List[List[float]] = crossovered_chromosomes + additional_chromosomes
+        additional_chromosomes: List[List[float]] = self.get_new_chromosomes(
+            len(self.population) - len(crossovered_chromosomes)
+        )
+        all_chromosomes: List[List[float]] = (
+            crossovered_chromosomes + additional_chromosomes
+        )
 
         # Apply mutations to the entire new population
         mutated_chromosomes: List[List[float]] = self.mutate_population(all_chromosomes)
 
         # Create CarRNA objects from the chromosomes
-        new_population: List[CarRNA] = [CarRNA(chromosomes) for chromosomes in mutated_chromosomes]
+        new_population: List[CarRNA] = [
+            CarRNA(chromosomes) for chromosomes in mutated_chromosomes
+        ]
 
         # Store as current population for next generation
         self.population = new_population
@@ -74,23 +85,28 @@ class CarAlgGen:
     def select_population(self, population: List[CarRNA]) -> List[List[float]]:
         """
         Returns the best half of the population applying tournament selection.
-        
+
         Args:
             population: Current population of neural networks
-            
+
         Returns:
             List of chromosome sets for the selected individuals
         """
-        sorted_population: List[CarRNA] = sorted(population, key=lambda rna: rna.get_score(), reverse=True)
-        return [rna.get_chromosomes() for rna in sorted_population[:self.population_size // 2]]
-              
+        sorted_population: List[CarRNA] = sorted(
+            population, key=lambda rna: rna.get_score(), reverse=True
+        )
+        return [
+            rna.get_chromosomes()
+            for rna in sorted_population[: self.population_size // 2]
+        ]
+
     def crossover_population(self, population: List[List[float]]) -> List[List[float]]:
         """
         Returns the crossovered population applying simple crossover.
-        
+
         Args:
             population: List of chromosome sets to crossover
-            
+
         Returns:
             List of child chromosome sets after crossover
         """
@@ -110,7 +126,7 @@ class CarAlgGen:
             crossover_population.append(child2)
 
         return crossover_population
-    
+
     def get_new_chromosomes(self, amount: int) -> List[List[float]]:
         """
         Returns a list of different chromosome sets (each one a list of weights).
@@ -124,7 +140,9 @@ class CarAlgGen:
         chromosome_sets: List[List[float]] = []
 
         for i in range(amount):
-            new_chromosomes: List[float] = [random.uniform(-1, 1) for _ in range(self.chromosomes_amount)]
+            new_chromosomes: List[float] = [
+                random.uniform(-1, 1) for _ in range(self.chromosomes_amount)
+            ]
             chromosome_sets.append(new_chromosomes)
 
         return chromosome_sets
@@ -142,7 +160,9 @@ class CarAlgGen:
         """
         # Increase mutation rate slightly based on generation (up to 5%)
         base_mutation_rate: float = 0.02  # 2% base mutation rate
-        adaptive_rate: float = min(MUTATION_RATE, base_mutation_rate + (self.generation * 0.001))
+        adaptive_rate: float = min(
+            MUTATION_RATE, base_mutation_rate + (self.generation * 0.001)
+        )
 
         for chromosomes in population:
             # For each chromosome set, decide if it should be mutated
@@ -159,7 +179,9 @@ class CarAlgGen:
                         # Small adjustment to existing value (-0.2 to +0.2)
                         chromosomes[mutation_point] += random.uniform(-0.2, 0.2)
                         # Clamp value between -1 and 1
-                        chromosomes[mutation_point] = max(-1, min(1, chromosomes[mutation_point]))
+                        chromosomes[mutation_point] = max(
+                            -1, min(1, chromosomes[mutation_point])
+                        )
                     else:
                         # Complete replacement with new random value
                         chromosomes[mutation_point] = random.uniform(-1, 1)
@@ -169,15 +191,15 @@ class CarAlgGen:
     def should_stop(self, population: List[CarRNA]) -> bool:
         """
         Determine if the genetic algorithm should stop.
-        
+
         Args:
             population: Current population
-            
+
         Returns:
             Whether the algorithm should stop
         """
         pass
-        
+
     def run(self) -> None:
         """Run the genetic algorithm."""
         pass
@@ -185,17 +207,15 @@ class CarAlgGen:
     def get_best_rna(self, population: List[CarRNA]) -> CarRNA:
         """
         Get the best neural network from the population.
-        
+
         Args:
             population: Population to evaluate
-            
+
         Returns:
             The best performing CarRNA
         """
         pass
-               
+
     def get_generation(self) -> int:
         """Get the current generation number."""
         return self.generation
-        
-        
