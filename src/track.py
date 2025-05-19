@@ -5,9 +5,9 @@ from .car import Car
 from .config.settings import CAR_IMAGE_PATH, CAR_WIDTH
 
 # Create game objects
-init_car_x = 860
+init_car_x = 900
 init_car_y = 500
-max_car_per_line = 5
+max_car_per_line = 4
 
 
 class Track:

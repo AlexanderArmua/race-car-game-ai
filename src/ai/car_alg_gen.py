@@ -114,7 +114,7 @@ class CarAlgGen:
 
         for i in range(0, len(population), 2):
             # break_point = random.randint(0, self.chromosomes_amount - 1)
-            break_point: int = 10
+            break_point: int = 12
 
             parent1: List[float] = population[i]
             parent2: List[float] = population[i + 1]
