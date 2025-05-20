@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import pygame
 
 from .ai.car_rna import CarRNA, CarRNAResult
+from .car_metric import CarMetric
 from .config.settings import CAR_SPEED, CAR_TURN_SPEED, MANUAL_CONTROL
 from .sensor import Sensor
 
@@ -69,6 +70,9 @@ class Car:
             Sensor(self.sensor_offsets[1], 0),  # mid-top
             Sensor(self.sensor_offsets[2], -45),  # right-top
         ]
+        
+        # Car metrics display
+        self.metrics: CarMetric = CarMetric()
 
     def update(self, keys: List[int], lines: List[Line]) -> None:
         """
@@ -129,7 +133,7 @@ class Car:
 
     def draw(self, screen: pygame.Surface) -> None:
         """
-        Draw the car and its sensors on the screen.
+        Draw the car, its sensors, and metrics on the screen.
 
         Args:
             screen: Pygame surface to draw on
@@ -138,6 +142,16 @@ class Car:
 
         # Draw sensors
         self._draw_sensors(screen)
+        
+        # Draw metrics above the car
+        self.metrics.draw(
+            screen=screen,
+            car_x=self.x,
+            car_y=self.y,
+            rect_height=self.rect.height,
+            score=self.get_score(),
+            is_alive=self.alive
+        )
 
     def _update_sensors(self, lines: List[Line]) -> None:
         """
