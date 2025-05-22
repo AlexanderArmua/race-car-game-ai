@@ -2,6 +2,7 @@ import random
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from ..config.settings import MUTATION_RATE
+from ..config.settings import CROSSOVER_RATE
 from .car_rna import CarRNA
 
 CHROMOSOMES_AMOUNT: int = 12
@@ -82,23 +83,33 @@ class CarAlgGen:
 
         return new_population
 
+    import random
+
     def select_population(self, population: List[CarRNA]) -> List[List[float]]:
         """
-        Returns the best half of the population applying tournament selection.
+        Selects 2 * population_size parents using roulette wheel selection.
 
         Args:
             population: Current population of neural networks
 
         Returns:
-            List of chromosome sets for the selected individuals
+            A list of chromosome sets for the selected individuals
         """
-        sorted_population: List[CarRNA] = sorted(
-            population, key=lambda rna: rna.get_score(), reverse=True
+        scores = [max(rna.get_score(), 0.0) for rna in population]  # Asegura scores >= 0
+        total_score = sum(scores)
+
+        # Evita división por cero si todos los scores son 0
+        if total_score == 0:
+            probabilities = [1 / len(population)] * len(population)
+        else:
+            probabilities = [score / total_score for score in scores]
+
+        selected_parents = random.choices(
+            population, weights=probabilities, k=2 * self.population_size
         )
-        return [
-            rna.get_chromosomes()
-            for rna in sorted_population[: self.population_size // 2]
-        ]
+
+        return [parent.get_chromosomes() for parent in selected_parents]
+
 
     def crossover_population(self, population: List[List[float]]) -> List[List[float]]:
         """
@@ -113,17 +124,18 @@ class CarAlgGen:
         crossover_population: List[List[float]] = []
 
         for i in range(0, len(population), 2):
-            # break_point = random.randint(0, self.chromosomes_amount - 1)
-            break_point: int = 10
 
             parent1: List[float] = population[i]
             parent2: List[float] = population[i + 1]
+            
+            a = CROSSOVER_RATE
+            b = 1-CROSSOVER_RATE
+            
+            child: List[float] = [a * x + b * y for x, y in zip(parent1, parent2)]
 
-            child1: List[float] = parent1[:break_point] + parent2[break_point:]
-            child2: List[float] = parent2[:break_point] + parent1[break_point:]
 
-            crossover_population.append(child1)
-            crossover_population.append(child2)
+            crossover_population.append(child)
+
 
         return crossover_population
 
@@ -187,6 +199,7 @@ class CarAlgGen:
                         chromosomes[mutation_point] = random.uniform(-1, 1)
 
         return population
+
 
     def should_stop(self, population: List[CarRNA]) -> bool:
         """

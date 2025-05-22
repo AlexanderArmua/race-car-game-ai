@@ -124,7 +124,7 @@ class CarRNA:
         Returns:
             Normalized inputs list
         """
-        return [input / 1000 if input is not None else 0 for input in inputs]
+        return [input / 100 if input is not None else 0 for input in inputs]
 
     def increase_score(self, new_value: int) -> None:
         """

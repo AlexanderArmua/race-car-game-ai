@@ -5,7 +5,7 @@ from .car import Car
 from .config.settings import CAR_IMAGE_PATH, CAR_WIDTH
 
 # Create game objects
-init_car_x = 860
+init_car_x = 900
 init_car_y = 500
 max_car_per_line = 5
 
@@ -139,7 +139,7 @@ class Track:
         cars = []
 
         for i in range(len(self.rnas)):
-            x = init_car_x + (i % max_car_per_line) * 50
+            x = init_car_x + (i % max_car_per_line) * 30
             y = init_car_y + (i // max_car_per_line) * 50
 
             rna = self.rnas[i]
