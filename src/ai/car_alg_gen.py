@@ -124,7 +124,6 @@ class CarAlgGen:
         crossover_population: List[List[float]] = []
 
         for i in range(0, len(population), 2):
-
             parent1: List[float] = population[i]
             parent2: List[float] = population[i + 1]
             
