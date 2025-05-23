@@ -1,6 +1,8 @@
 import math
 from enum import Enum
-from typing import Callable, List, Optional, TypeVar, Union
+from typing import Callable, List, Optional
+
+from src.config.settings import NORMALIZATION_FACTOR
 
 NEURONS_FORMAT: List[int] = [3, 3, 1]  # [ (0,1,2), (3,4,5), (6) ]
 
@@ -124,7 +126,9 @@ class CarRNA:
         Returns:
             Normalized inputs list
         """
-        return [input / 100 if input is not None else 0 for input in inputs]
+        return [
+            input / NORMALIZATION_FACTOR if input is not None else 0 for input in inputs
+        ]
 
     def increase_score(self, new_value: int) -> None:
         """

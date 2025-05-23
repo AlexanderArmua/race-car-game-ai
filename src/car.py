@@ -70,7 +70,7 @@ class Car:
             Sensor(self.sensor_offsets[1], 0),  # mid-top
             Sensor(self.sensor_offsets[2], -45),  # right-top
         ]
-        
+
         # Car metrics display
         self.metrics: CarMetric = CarMetric()
 
@@ -142,7 +142,7 @@ class Car:
 
         # Draw sensors
         self._draw_sensors(screen)
-        
+
         # Draw metrics above the car
         self.metrics.draw(
             screen=screen,
@@ -150,7 +150,7 @@ class Car:
             car_y=self.y,
             rect_height=self.rect.height,
             score=self.get_score(),
-            is_alive=self.alive
+            is_alive=self.alive,
         )
 
     def _update_sensors(self, lines: List[Line]) -> None:

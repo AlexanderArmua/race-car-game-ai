@@ -1,8 +1,8 @@
 import random
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import List
 
-from ..config.settings import MUTATION_RATE
-from ..config.settings import CROSSOVER_RATE
+from src.config.settings import CROSSOVER_RATE, MUTATION_RATE
+
 from .car_rna import CarRNA
 
 CHROMOSOMES_AMOUNT: int = 12
@@ -83,8 +83,6 @@ class CarAlgGen:
 
         return new_population
 
-    import random
-
     def select_population(self, population: List[CarRNA]) -> List[List[float]]:
         """
         Selects 2 * population_size parents using roulette wheel selection.
@@ -95,7 +93,9 @@ class CarAlgGen:
         Returns:
             A list of chromosome sets for the selected individuals
         """
-        scores = [max(rna.get_score(), 0.0) for rna in population]  # Asegura scores >= 0
+        scores = [
+            max(rna.get_score(), 0.0) for rna in population
+        ]  # Asegura scores >= 0
         total_score = sum(scores)
 
         # Evita división por cero si todos los scores son 0
@@ -109,7 +109,6 @@ class CarAlgGen:
         )
 
         return [parent.get_chromosomes() for parent in selected_parents]
-
 
     def crossover_population(self, population: List[List[float]]) -> List[List[float]]:
         """
@@ -126,15 +125,13 @@ class CarAlgGen:
         for i in range(0, len(population), 2):
             parent1: List[float] = population[i]
             parent2: List[float] = population[i + 1]
-            
+
             a = CROSSOVER_RATE
-            b = 1-CROSSOVER_RATE
-            
+            b = 1 - CROSSOVER_RATE
+
             child: List[float] = [a * x + b * y for x, y in zip(parent1, parent2)]
 
-
             crossover_population.append(child)
-
 
         return crossover_population
 
@@ -198,7 +195,6 @@ class CarAlgGen:
                         chromosomes[mutation_point] = random.uniform(-1, 1)
 
         return population
-
 
     def should_stop(self, population: List[CarRNA]) -> bool:
         """

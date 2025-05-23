@@ -13,9 +13,9 @@ from .config.settings import (
     DISPLAY_WIDTH,
     FPS,
     GENERATION_TIME_LIMIT,
+    MAXIMUM_SCORE,
     RANDOM_SEED,
     USE_FIXED_SEED,
-    MAXIMUM_SCORE
 )
 from .metrics_logger import MetricsLogger
 from .race_info import RaceInfo
@@ -114,8 +114,6 @@ def main():
 
         # Update display
         pygame.display.update()
-        
-        best_car = max(track.cars, key=lambda car: car.get_score())
 
         if track.are_all_cars_dead() or best_car.get_score() > MAXIMUM_SCORE:
             seconds_running = 0
