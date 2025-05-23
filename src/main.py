@@ -122,12 +122,16 @@ def main():
             best_car = max(track.cars, key=lambda car: car.get_score())
 
             # Log metrics for this generation
+            cars_alive_at_end = track.get_all_cars_alive()
             metrics_logger.log_generation(
                 alg_gen.get_generation(),
                 best_car.get_score(),
-                track.get_all_cars_alive(),
+                cars_alive_at_end,
                 track.cars,
             )
+
+            # Update race info chart data
+            race_info.update_generation_data(alg_gen.get_generation(), cars_alive_at_end)
 
             new_rnas = alg_gen.get_new_population()
 
