@@ -93,12 +93,11 @@ class CarAlgGen:
         Returns:
             A list of chromosome sets for the selected individuals
         """
-        scores = [
-            max(rna.get_score(), 0.0) for rna in population
-        ]  # Asegura scores >= 0
+        # Ensures scores bigger or equal to 0
+        scores = [max(rna.get_score(), 0.0) for rna in population]
         total_score = sum(scores)
 
-        # Evita división por cero si todos los scores son 0
+        # Avoids division by zero if all scores are 0
         if total_score == 0:
             probabilities = [1 / len(population)] * len(population)
         else:
@@ -129,7 +128,9 @@ class CarAlgGen:
             a = CROSSOVER_RATE
             b = 1 - CROSSOVER_RATE
 
-            child: List[float] = [a * x + b * y for x, y in zip(parent1, parent2)]
+            child: List[float] = [
+                max(-1, min(1, a * x + b * y)) for x, y in zip(parent1, parent2)
+            ]
 
             crossover_population.append(child)
 

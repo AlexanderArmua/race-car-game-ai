@@ -131,7 +131,9 @@ def main():
             )
 
             # Update race info chart data
-            race_info.update_generation_data(alg_gen.get_generation(), cars_alive_at_end)
+            race_info.update_generation_data(
+                alg_gen.get_generation(), cars_alive_at_end
+            )
 
             new_rnas = alg_gen.get_new_population()
 

@@ -2,7 +2,7 @@
 import os
 
 # Real window size
-REAL_DISPLAY_WIDTH = 1920
+REAL_DISPLAY_WIDTH = 1420
 REAL_DISPLAY_HEIGHT = 1080
 
 # Track settings

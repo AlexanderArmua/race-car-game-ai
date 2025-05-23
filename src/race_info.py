@@ -373,134 +373,146 @@ class RaceInfo:
         chart_width: int = 300
         chart_height: int = 200
         margin: int = 10
-        
+
         # Position in top-right corner
         screen_width: int = self.screen.get_width()
         chart_x: int = screen_width - chart_width - margin
         chart_y: int = margin
-        
+
         # Create background for chart
         chart_overlay: pygame.Surface = pygame.Surface((chart_width, chart_height))
         chart_overlay.set_alpha(180)
         chart_overlay.fill((30, 30, 40))
         self.screen.blit(chart_overlay, (chart_x, chart_y))
-        
+
         # Draw title
         title_text: str = "Cars Alive by Generation"
         self.screen.blit(
             self.font.render(title_text, True, (255, 255, 255)),
-            (chart_x + 10, chart_y + 10)
+            (chart_x + 10, chart_y + 10),
         )
-        
+
         # Chart area (leave space for title and labels)
         plot_margin: int = 40
         plot_x: int = chart_x + plot_margin
         plot_y: int = chart_y + plot_margin
         plot_width: int = chart_width - 2 * plot_margin
         plot_height: int = chart_height - 2 * plot_margin
-        
+
         # Draw chart border
         pygame.draw.rect(
-            self.screen,
-            (100, 100, 150),
-            (plot_x, plot_y, plot_width, plot_height),
-            2
+            self.screen, (100, 100, 150), (plot_x, plot_y, plot_width, plot_height), 2
         )
-        
+
         # Get data ranges
         generations: List[int] = [data[0] for data in self.generation_data]
         cars_alive_values: List[int] = [data[1] for data in self.generation_data]
-        
+
         min_gen: int = min(generations)
         max_gen: int = max(generations)
         min_cars: int = 0  # Always start from 0
         max_cars: int = max(cars_alive_values) if cars_alive_values else 1
-        
+
         # Ensure we have some range to work with
         if max_gen == min_gen:
             max_gen = min_gen + 1
         if max_cars == min_cars:
             max_cars = min_cars + 1
-            
+
         # Draw grid lines and labels
         # Vertical lines (generations)
         num_gen_lines: int = min(5, max_gen - min_gen + 1)
         for i in range(num_gen_lines):
             if num_gen_lines > 1:
-                gen_value: float = min_gen + (max_gen - min_gen) * i / (num_gen_lines - 1)
+                gen_value: float = min_gen + (max_gen - min_gen) * i / (
+                    num_gen_lines - 1
+                )
             else:
                 gen_value: float = min_gen
-            x: int = plot_x + int(plot_width * i / max(1, num_gen_lines - 1)) if num_gen_lines > 1 else plot_x
-            
+            x: int = (
+                plot_x + int(plot_width * i / max(1, num_gen_lines - 1))
+                if num_gen_lines > 1
+                else plot_x
+            )
+
             # Draw grid line
             pygame.draw.line(
-                self.screen,
-                (70, 70, 80),
-                (x, plot_y),
-                (x, plot_y + plot_height),
-                1
+                self.screen, (70, 70, 80), (x, plot_y), (x, plot_y + plot_height), 1
             )
-            
+
             # Draw label
             label: str = f"{int(gen_value)}"
             self.screen.blit(
                 self.small_font.render(label, True, (200, 200, 200)),
-                (x - 10, plot_y + plot_height + 5)
+                (x - 10, plot_y + plot_height + 5),
             )
-        
+
         # Horizontal lines (cars alive)
         num_car_lines: int = 5
         for i in range(num_car_lines):
-            cars_value: float = min_cars + (max_cars - min_cars) * i / (num_car_lines - 1)
+            cars_value: float = min_cars + (max_cars - min_cars) * i / (
+                num_car_lines - 1
+            )
             y: int = plot_y + plot_height - int(plot_height * i / (num_car_lines - 1))
-            
+
             # Draw grid line
             pygame.draw.line(
-                self.screen,
-                (70, 70, 80),
-                (plot_x, y),
-                (plot_x + plot_width, y),
-                1
+                self.screen, (70, 70, 80), (plot_x, y), (plot_x + plot_width, y), 1
             )
-            
+
             # Draw label
             label: str = f"{int(cars_value)}"
             self.screen.blit(
                 self.small_font.render(label, True, (200, 200, 200)),
-                (plot_x - 35, y - 6)
+                (plot_x - 35, y - 6),
             )
-        
+
         # Draw the data points and line chart
         points: List[Tuple[int, int]] = []
-        
+
         for generation, cars_alive in self.generation_data:
             # Convert data to pixel coordinates
-            x_ratio: float = (generation - min_gen) / (max_gen - min_gen) if max_gen != min_gen else 0
-            y_ratio: float = (cars_alive - min_cars) / (max_cars - min_cars) if max_cars != min_cars else 0
-            
+            x_ratio: float = (
+                (generation - min_gen) / (max_gen - min_gen)
+                if max_gen != min_gen
+                else 0
+            )
+            y_ratio: float = (
+                (cars_alive - min_cars) / (max_cars - min_cars)
+                if max_cars != min_cars
+                else 0
+            )
+
             pixel_x: int = plot_x + int(x_ratio * plot_width)
             pixel_y: int = plot_y + plot_height - int(y_ratio * plot_height)
-            
+
             points.append((pixel_x, pixel_y))
-        
+
         # Draw the line connecting all points (if we have more than one point)
         if len(points) >= 2:
             pygame.draw.lines(self.screen, (100, 255, 100), False, points, 3)
-            
+
         # Draw points as small circles (even for single points)
         for point in points:
             pygame.draw.circle(self.screen, (255, 255, 100), point, 4)
-        
+
         # Draw axis labels
         # X-axis label
         x_label: str = "Generation"
-        x_label_surface: pygame.Surface = self.small_font.render(x_label, True, (255, 255, 255))
+        x_label_surface: pygame.Surface = self.small_font.render(
+            x_label, True, (255, 255, 255)
+        )
         self.screen.blit(
             x_label_surface,
-            (plot_x + plot_width // 2 - x_label_surface.get_width() // 2, chart_y + chart_height - 15)
+            (
+                plot_x + plot_width // 2 - x_label_surface.get_width() // 2,
+                chart_y + chart_height - 15,
+            ),
         )
-        
+
         # Y-axis label (rotated would be ideal, but we'll use abbreviated text)
         y_label: str = "Cars"
-        y_label_surface: pygame.Surface = self.small_font.render(y_label, True, (255, 255, 255))
+        y_label_surface: pygame.Surface = self.small_font.render(
+            y_label, True, (255, 255, 255)
+        )
         self.screen.blit(y_label_surface, (chart_x + 5, plot_y + plot_height // 2))
