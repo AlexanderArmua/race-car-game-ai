@@ -9,11 +9,11 @@ from .ai.car_alg_gen import CarAlgGen
 from .config.settings import (
     BACKGROUND_COLOR,
     CARS_AMOUNT,
-    DISPLAY_HEIGHT,
-    DISPLAY_WIDTH,
     FPS,
-    GENERATION_TIME_LIMIT,
+    MAXIMUM_SCORE,
     RANDOM_SEED,
+    REAL_DISPLAY_HEIGHT,
+    REAL_DISPLAY_WIDTH,
     USE_FIXED_SEED,
 )
 from .metrics_logger import MetricsLogger
@@ -32,7 +32,7 @@ def init_game():
     pygame.display.set_caption("UTN - IA 2025 - Car Game")
 
     # Set up display
-    screen = pygame.display.set_mode((DISPLAY_WIDTH, DISPLAY_HEIGHT))
+    screen = pygame.display.set_mode((REAL_DISPLAY_WIDTH, REAL_DISPLAY_HEIGHT))
 
     return clock, screen
 
@@ -85,7 +85,7 @@ def main():
     alg_gen = CarAlgGen(CARS_AMOUNT)
     rna_cars = alg_gen.generate_initial_population()
 
-    track = Track(screen, rna_cars, DISPLAY_WIDTH, DISPLAY_HEIGHT)
+    track = Track(screen, rna_cars)
 
     race_info = RaceInfo(screen, track)
     race_info.set_alg_gen(alg_gen)  # Pass the genetic algorithm reference
@@ -114,17 +114,25 @@ def main():
         # Update display
         pygame.display.update()
 
-        if track.are_all_cars_dead() or seconds_running > GENERATION_TIME_LIMIT:
+        best_car = max(track.cars, key=lambda car: car.get_score())
+
+        if track.are_all_cars_dead() or best_car.get_score() > MAXIMUM_SCORE:
             seconds_running = 0
 
             best_car = max(track.cars, key=lambda car: car.get_score())
 
             # Log metrics for this generation
+            cars_alive_at_end = track.get_all_cars_alive()
             metrics_logger.log_generation(
                 alg_gen.get_generation(),
                 best_car.get_score(),
-                track.get_all_cars_alive(),
+                cars_alive_at_end,
                 track.cars,
+            )
+
+            # Update race info chart data
+            race_info.update_generation_data(
+                alg_gen.get_generation(), cars_alive_at_end
             )
 
             new_rnas = alg_gen.get_new_population()
