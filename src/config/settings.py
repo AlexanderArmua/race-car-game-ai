@@ -1,18 +1,23 @@
 # Car settings
 import os
 
-# Game settings
-DISPLAY_WIDTH = 1200
-DISPLAY_HEIGHT = 800
+# Real window size
+REAL_DISPLAY_WIDTH = 1920
+REAL_DISPLAY_HEIGHT = 1080
+
+# Track settings
+TRACK_WIDTH = 1200
+TRACK_HEIGHT = 800
+
 BACKGROUND_COLOR = (0, 140, 0)  # Green grass
-FPS = 500
+FPS = 60
 CARS_AMOUNT = 30
 
 # AI settings
 GENERATION_TIME_LIMIT = 2  # Seconds before creating a new generation
 MAXIMUM_SCORE = 100
-RANDOM_SEED = 2062072707638544738  # Fixed seed for reproducibility (change this value to get different but reproducible results)
-USE_FIXED_SEED = False  # Set to False to use random behavior
+RANDOM_SEED = 5248566192128910003  # Fixed seed for reproducibility (change this value to get different but reproducible results)
+USE_FIXED_SEED = True  # Set to False to use random behavior
 
 # Define the path relative to the project root
 CAR_IMAGE_PATH = os.path.join(
@@ -37,4 +42,4 @@ CROSSOVER_RATE = 0.8
 MANUAL_CONTROL = False
 
 # Factor to normalize the inputs to be between 0 and 1.
-NORMALIZATION_FACTOR = 100
+NORMALIZATION_FACTOR = 400

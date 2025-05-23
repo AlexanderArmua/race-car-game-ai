@@ -127,7 +127,8 @@ class CarRNA:
             Normalized inputs list
         """
         return [
-            input / NORMALIZATION_FACTOR if input is not None else 0 for input in inputs
+            min(input / NORMALIZATION_FACTOR, 1.0) if input is not None else 0
+            for input in inputs
         ]
 
     def increase_score(self, new_value: int) -> None:

@@ -2,14 +2,19 @@ import pygame
 
 from .ai.car_rna import CarRNA
 from .car import Car
-from .config.settings import CAR_IMAGE_PATH, CAR_WIDTH
+from .config.settings import (
+    CAR_IMAGE_PATH,
+    CAR_WIDTH,
+    TRACK_HEIGHT,
+    TRACK_WIDTH,
+)
 
 # Create game objects
-INIT_CAR_X = 900
-INIT_CAR_Y = 500
+INIT_CAR_X = 1000
+INIT_CAR_Y = 600
 MAX_CARS_PER_LINE = 4
 CAR_SPACING_X = 30
-CAR_SPACING_Y = 50
+CAR_SPACING_Y = 30
 
 
 class Track:
@@ -17,8 +22,6 @@ class Track:
         self,
         screen: pygame.Surface,
         rnas: list[CarRNA],
-        display_width: int,
-        display_height: int,
         border_padding: float = 0.1,
         track_width: float = 0.2,
     ):
@@ -33,8 +36,8 @@ class Track:
         """
         self.rnas = rnas
         self.screen = screen
-        self.display_width = display_width
-        self.display_height = display_height
+        self.display_width = TRACK_WIDTH
+        self.display_height = TRACK_HEIGHT
         self.border_padding = border_padding
         self.track_width = track_width
 
@@ -42,18 +45,18 @@ class Track:
 
         # Outer boundary rectangle (big)
         self.outer_rect = pygame.Rect(
-            display_width * border_padding,
-            display_height * border_padding,
-            display_width * (1 - 2 * border_padding),
-            display_height * (1 - 2 * border_padding),
+            self.display_width * self.border_padding + 100,
+            self.display_height * self.border_padding + 100,
+            self.display_width * (1 - 2 * self.border_padding),
+            self.display_height * (1 - 2 * self.border_padding),
         )
 
         # Inner boundary rectangle (small)
         self.inner_rect = pygame.Rect(
-            display_width * (border_padding + track_width),
-            display_height * (border_padding + track_width),
-            display_width * (1 - 2 * (border_padding + track_width)),
-            display_height * (1 - 2 * (border_padding + track_width)),
+            self.display_width * (self.border_padding + track_width) + 100,
+            self.display_height * (self.border_padding + track_width) + 100,
+            self.display_width * (1 - 2 * (self.border_padding + track_width)),
+            self.display_height * (1 - 2 * (self.border_padding + track_width)),
         )
 
         self.restart_cars(self.rnas)
@@ -96,7 +99,7 @@ class Track:
 
         return [self.outer_rect, self.inner_rect]
 
-    def get_rect_lines(
+    def _get_rect_lines(
         self, rect: pygame.Rect
     ) -> list[tuple[tuple[int, int], tuple[int, int]]]:
         """
@@ -121,7 +124,7 @@ class Track:
 
         lines = []
         for rect in self.get_boundary_rects():
-            lines.extend(self.get_rect_lines(rect))
+            lines.extend(self._get_rect_lines(rect))
 
         return lines
 
